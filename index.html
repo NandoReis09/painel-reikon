@@ -74,6 +74,10 @@ pre.pv{white-space:pre-wrap;background:#faf6f6;border:1px dashed var(--line);bor
 .sxl{position:fixed;z-index:80;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:0 22px 50px -14px rgba(60,20,20,.38);padding:6px;overflow:auto}
 .sxo{padding:9px 12px;border-radius:9px;cursor:pointer;display:flex;justify-content:space-between;gap:12px}
 .sxo.k,.sxo:hover{background:#f6eeee}.sxo.on{color:var(--dk);font-weight:600}.sxo i{font-style:normal}
+.ropts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.ro{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;padding:16px;border:2px solid var(--line);border-radius:16px;background:#fff;color:var(--ink)}
+.ro:hover{filter:none;background:#fbf8f8}.ro b{font-size:18px}.ro span{font-size:22px;font-weight:650;color:var(--dk)}.ro small{color:var(--mut)}
+.ro.on{border-color:var(--red);background:#fff5f5;box-shadow:0 0 0 3px rgba(255,26,26,.12)}
 </style>
 </head>
 <body>
@@ -175,6 +179,11 @@ pre.pv{white-space:pre-wrap;background:#faf6f6;border:1px dashed var(--line);bor
 </main>
 </div>
 <dialog id="dlg"><h2>Cobrança · <span id="mwho"></span></h2><select id="msel" style="margin-bottom:10px"></select><textarea id="mt" style="height:240px"></textarea><div class="bar"><button class="p" id="mcopy">Copiar</button><button id="mwa">Abrir no WhatsApp</button><button class="s" id="mclose">Fechar</button><span id="mok" style="color:#1c7a3d;font-size:13px"></span></div></dialog>
+<dialog id="rdlg"><h2>Renovar · <span id="rwho"></span></h2>
+<p class="note" id="rinfo" style="margin:0"></p>
+<div class="ropts"><button type="button" class="ro" data-k="d3"><b>3 dias</b><span id="rd3"></span><small>renovação curta</small></button><button type="button" class="ro" data-k="m1"><b>1 mês</b><span id="rm1"></span><small>mesma data do próximo mês</small></button></div>
+<p class="note sh" id="rwarn" style="margin:0 0 8px"></p>
+<div class="bar" style="margin-top:6px"><button class="p" id="rok">Confirmar renovação</button><button class="s" id="rother">Outra data…</button><button class="s" id="rno">Cancelar</button></div></dialog>
 <dialog id="cdlg"><h2 id="ctitle">Cliente</h2>
 <div class="r"><div><label>Nome</label><input id="cnome"></div><div><label>Usuário</label><input id="cusu"></div></div>
 <div class="r"><div><label>Servidor</label><select id="csrv"></select></div><div><label>Tela (se compartilhado)</label><select id="ctela"><option value=""></option><option>1</option><option>2</option></select></div></div>
@@ -187,7 +196,7 @@ pre.pv{white-space:pre-wrap;background:#faf6f6;border:1px dashed var(--line);bor
 <dialog id="qdlg"><p id="qmsg" style="white-space:pre-wrap;margin:0 0 12px"></p><input id="qin" hidden><div class="bar"><button class="p" id="qok">OK</button><button class="s" id="qno">Cancelar</button></div></dialog>
 <div id="toast" popover="manual"></div>
 <script>
-const APP_VER='1.5',KEY='reikon_db',VER=6;
+const APP_VER='1.6',KEY='reikon_db',VER=6;
 const DEF_TPL='Olá, {primeiro_nome}! 👋\n\nPassando para lembrar que o seu acesso da Reikon TV vence em {vencimento}.\n\nUsuário: {usuario}\nPlano: {plano}\nValor: {valor}\n\nPara renovar, é só enviar o pix e me avisar por aqui. Obrigado!';
 const $=id=>document.getElementById(id);
 function toast(m){const t=$('toast');t.textContent=m;try{t.hidePopover()}catch(e){}try{t.showPopover()}catch(e){t.hidden=false}clearTimeout(toast.t);toast.t=setTimeout(()=>{try{t.hidePopover()}catch(e){t.hidden=true}},4000)}
@@ -387,10 +396,21 @@ $('msel').onchange=()=>{$('mt').value=fillTpl(curC,db.templates.find(x=>x.id===$
 $('mclose').onclick=()=>$('dlg').close();
 $('mcopy').onclick=()=>navigator.clipboard.writeText($('mt').value).then(()=>{$('mok').textContent='Copiado.'},()=>$('mt').select());
 $('mwa').onclick=()=>{let p=(curC.phone||'').replace(/\D/g,'');if(!p)return toast('Este cliente não tem telefone cadastrado.');if(p.length<=11)p='55'+p;window.open('https://wa.me/'+p+'?text='+encodeURIComponent($('mt').value),'_blank')};
-async function renovar(c){const g=[c,...shared(c)],hoje=toISO(new Date());
-  const [y,m,d]=((dayDiff(c.venc)>=0?c.venc:hoje)).split('-').map(Number);let dt=new Date(y,m,d);if(dt.getDate()!==d)dt=new Date(y,m+1,0);
-  const r=await perguntar(`Nova data de vencimento para ${g.map(x=>x.nome).join(' e ')}:`,isoBR(toISO(dt)));if(!r)return;
-  const iso=brISO(r);if(!iso)return toast('Use o formato dd/mm/aaaa.');g.forEach(x=>x.venc=iso);persist();renderCob()}
+let rC=null,rK='m1';
+const addDays=(iso,n)=>{const [y,m,d]=iso.split('-').map(Number);return toISO(new Date(y,m-1,d+n))};
+const addMonth=iso=>{const [y,m,d]=iso.split('-').map(Number);let dt=new Date(y,m,d);if(dt.getDate()!==d)dt=new Date(y,m+1,0);return toISO(dt)};
+const rNew=(iso,k)=>k==='d3'?addDays(iso,3):addMonth(iso);
+const vivo=c=>{const n=dayDiff(c.venc);return n!==null&&n>=0};
+const baseDate=c=>vivo(c)?c.venc:toISO(new Date());
+function selR(k){rK=k;document.querySelectorAll('.ro').forEach(x=>x.classList.toggle('on',x.dataset.k===k))}
+function renovar(c){rC=c;const g=[c,...shared(c)],b=baseDate(c);$('rwho').textContent=g.map(x=>x.nome).join(' e ');
+  $('rinfo').textContent=vivo(c)?'Vencimento atual: '+isoBR(c.venc)+'. A renovação soma a partir dele.':(c.venc?'Vencido em '+isoBR(c.venc)+'. A contagem começa hoje ('+isoBR(b)+').':'Sem vencimento cadastrado. A contagem começa hoje.');
+  $('rd3').textContent=isoBR(rNew(b,'d3'));$('rm1').textContent=isoBR(rNew(b,'m1'));
+  $('rwarn').textContent=g.length>1?'Usuário compartilhado: os '+g.length+' clientes serão renovados juntos.':'';selR('m1');$('rdlg').showModal()}
+document.querySelectorAll('.ro').forEach(x=>x.onclick=()=>selR(x.dataset.k));
+$('rok').onclick=()=>{const g=[rC,...shared(rC)],iso=rNew(baseDate(rC),rK);g.forEach(x=>x.venc=iso);persist();$('rdlg').close();renderCob();toast('Renovado até '+isoBR(iso)+(g.length>1?' ('+g.length+' clientes)':''))};
+$('rno').onclick=()=>$('rdlg').close();
+$('rother').onclick=async()=>{const g=[rC,...shared(rC)];$('rdlg').close();const r=await perguntar(`Nova data de vencimento para ${g.map(x=>x.nome).join(' e ')}:`,isoBR(rNew(baseDate(rC),'m1')));if(!r)return;const iso=brISO(r);if(!iso)return toast('Use o formato dd/mm/aaaa.');g.forEach(x=>x.venc=iso);persist();renderCob()};
 function compr(c){clearForm();$('user').value=c.usuario||'';$('due').value=isoBR(c.venc);$('name').value=c.nome||'';$('val').value=c.valor==null?'':String(c.valor).replace('.',',');$('plan').value=c.plano||'';$('srv').value=c.servidor||'';go('rec')}
 function editar(c){cedit=c;$('ctitle').textContent=c?'Editar cliente':'Novo cliente';
   $('csrv').innerHTML=servers().map(s=>`<option>${esc(s)}</option>`).join('');
