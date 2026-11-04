@@ -321,7 +321,7 @@ html,body{max-width:100%;overflow-x:clip}
 <div id="lock" hidden><div class="lk"><img id="lkimg" alt=""><h2 style="margin:0">Painel bloqueado</h2><input id="lkin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"><button class="p" id="lkok">Entrar</button><p id="lkmsg"></p><small>Esqueceu o PIN? Limpe os dados do site no navegador e restaure o backup ou sincronize pelo GitHub.</small></div></div>
 <div id="toast" popover="manual"></div>
 <script>
-const APP_VER='2.3',KEY='reikon_db',VER=8;
+const APP_VER='2.4',KEY='reikon_db',VER=8;
 const DEF_TPL='Olá, {primeiro_nome}! 👋\n\nPassando para lembrar que o seu acesso da Reikon TV vence em {vencimento}.\n\nUsuário: {usuario}\nPlano: {plano}\nValor: {valor}\n\nPara renovar, é só enviar o pix e me avisar por aqui. Obrigado!';
 const $=id=>document.getElementById(id);
 function toast(m,act){const t=$('toast');t.textContent=m;if(act){const b=document.createElement('button');b.className='tbtn';b.textContent=act.label;b.onclick=()=>{act.fn();try{t.hidePopover()}catch(e){}};t.append(b)}
@@ -385,8 +385,8 @@ $('nall').onclick=()=>{const l=db.novos.filter(c=>c.status!=='enviado');if(!l.le
 $('ntxt').onclick=()=>{if(!db.novos.length)return toast('Nenhum pedido ainda.');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([promptNovos(db.novos)],{type:'text/plain;charset=utf-8'}));a.download='clientes-novos-'+new Date().toISOString().slice(0,10)+'.txt';a.click()};
 $('newcli').onclick=()=>{const d=data();if(!d.name||!d.user)return toast('Preencha pelo menos o nome do cliente e o usuário.');
   const ex=db.clients.find(c=>c.usuario===d.user&&(c.nome||'').toLowerCase()===d.name.toLowerCase());if(ex)return toast(`${d.name} já está em Cobranças (${ex.servidor||'sem servidor'}).`);
-  const n={id:'n'+Date.now(),at:Date.now(),nome:d.name,usuario:d.user,servidor:d.srv,valor:d.val,venc:d.due,plano:d.plan,status:'pendente'};
-  db.novos.unshift(n);db.clients.push({id:'c'+Date.now()+'n',nome:d.name,usuario:d.user,servidor:d.srv,valor:d.val?num(d.val):null,venc:brISO(d.due),plano:d.plan,tela:'',phone:'',obs:'',naosinc:true,novoId:n.id});logar('cliente','Cliente novo (não sincronizado): '+d.name);persist();renderNovos();navigator.clipboard.writeText(promptNovos([n])).then(()=>toast('Pedido copiado e guardado em Backup, Clientes novos.'),()=>toast('Pedido guardado em Backup, Clientes novos.'))};
+  const vp=d.plano||d.val,n={id:'n'+Date.now(),at:Date.now(),nome:d.name,usuario:d.user,servidor:d.srv,valor:vp,venc:d.due,plano:d.plan,status:'pendente'};
+  db.novos.unshift(n);db.clients.push({id:'c'+Date.now()+'n',nome:d.name,usuario:d.user,servidor:d.srv,valor:vp?num(vp):null,venc:brISO(d.due),plano:d.plan,tela:'',phone:'',obs:'',naosinc:true,novoId:n.id});logar('cliente','Cliente novo (não sincronizado): '+d.name);persist();renderNovos();navigator.clipboard.writeText(promptNovos([n])).then(()=>toast('Pedido copiado e guardado em Backup, Clientes novos.'),()=>toast('Pedido guardado em Backup, Clientes novos.'))};
 function renderBkp(){renderNovos();$('lastb').textContent=db.lastBackup?'Último backup: '+new Date(db.lastBackup).toLocaleString('pt-BR'):'Nenhum backup feito ainda.';$('bmsg').textContent=''}
 $('exp').onclick=()=>{db.lastBackup=Date.now();persist();
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,1)],{type:'application/json'}));
