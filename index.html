@@ -133,6 +133,26 @@ button.s:hover,button.p:hover,.tb:hover{filter:brightness(1.04)}
 #bnav button.on{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1));border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 6px 14px -6px rgba(0,0,0,.5);color:#fff}
 }
 </style>
+<style id="fix-mobile">
+/* === Ajuste mobile: nada passa da largura da tela; tabelas encolhem ou rolam pro lado === */
+html,body{max-width:100%;overflow-x:clip}
+.app>main,main,section{min-width:0;max-width:100%}
+.card,.g21>*,.grid2>*,.stats>*{min-width:0;max-width:100%}
+.hl,pre.pv{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#flucro,#fest{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.tbl.mini{font-size:12px}
+.tbl.mini th,.tbl.mini td{padding-left:4px;padding-right:4px}
+@media(max-width:900px){
+.app{grid-template-columns:minmax(0,1fr)}
+.g21,.grid2{grid-template-columns:minmax(0,1fr)}
+.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stat b{font-size:clamp(20px,6vw,30px);overflow-wrap:anywhere}
+#top{width:100%;left:0;right:0}
+#v-fin>.card>.r{grid-template-columns:1fr}
+#v-fin>.card>.r>.bar{margin:0!important}
+#v-fin>.card>.r>.bar button{flex:1 1 auto}
+}
+</style>
 </head>
 <body>
 <div id="top"><button id="hamb" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><img id="topimg" alt="Reikon"></div>
@@ -177,7 +197,8 @@ button.s:hover,button.p:hover,.tb:hover{filter:brightness(1.04)}
 <div class="r"><div><label>Usuário</label><input id="user"></div><div><label>Próximo vencimento</label><input id="due" placeholder="30/11/2026" inputmode="numeric"></div></div>
 <div id="ucli" class="ucli" hidden></div>
 <label>Nome do cliente</label><input id="name">
-<div class="r"><div><label>Valor pago (R$)</label><input id="val" inputmode="decimal" placeholder="30,00"></div><div><label>Data do pagamento</label><input id="paid" inputmode="numeric" placeholder="30/10/2026"></div></div>
+<div class="r"><div><label>Valor do plano (R$)</label><input id="val" inputmode="decimal" placeholder="30,00"></div><div><label>Data do pagamento</label><input id="paid" inputmode="numeric" placeholder="30/10/2026"></div></div>
+<div class="r"><div><label>Desconto (R$) — opcional</label><input id="disc" inputmode="decimal" placeholder="0,00"></div><div><label>Total a pagar (plano − desconto)</label><input id="orig" readonly tabindex="-1" placeholder="—"></div></div>
 <div class="r"><div><label>Plano</label><input id="plan" list="plans" placeholder="Mensal"><datalist id="plans"></datalist></div><div><label>Servidor</label><select id="srv"><option></option><option>Lexus</option><option>Black</option><option>Fast</option><option>Clube</option></select></div></div>
 <label>Nº do comprovante (avança sozinho)</label><input id="num" inputmode="numeric" style="max-width:160px">
 <label class="chk"><input type="checkbox" id="ctipo"> Renovação de confiança (3 dias, não gasta crédito)</label>
@@ -909,6 +930,112 @@ if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceW
 bloquear();
 $('autorn').checked=db.opt.auto;$('modelo').value=db.opt.modelo||'premium';
 go('home');
+</script>
+
+<script>
+/* Ajusta tabelas ao tamanho da tela: diminui a fonte até caber (mín. 11px); se ainda não couber, o contêiner rola pro lado */
+(function(){
+  function ajustarTabelas(){
+    document.querySelectorAll('table.tbl').forEach(function(t){
+      var c=t.parentElement; if(!c||!t.offsetParent) return;
+      t.classList.remove('mini'); t.style.fontSize='';
+      if(c.scrollWidth<=c.clientWidth+1) return;
+      t.classList.add('mini');
+      for(var s=12;s>=11&&c.scrollWidth>c.clientWidth+1;s-=.5) t.style.fontSize=s+'px';
+    });
+  }
+  var agendado=false;
+  function agendar(){ if(agendado) return; agendado=true; requestAnimationFrame(function(){agendado=false;ajustarTabelas();}); }
+  var m=document.querySelector('main');
+  if(m&&window.MutationObserver) new MutationObserver(agendar).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+  window.addEventListener('resize',agendar);
+  window.addEventListener('orientationchange',agendar);
+  agendar();
+})();
+</script>
+
+<script id="desconto-addon">
+/* === Desconto no comprovante (módulo adicional; apagar este bloco e a linha id="disc" desativa tudo) === */
+(function(){
+  var P=function(v){var n=parseFloat(String(v==null?'':v).replace(/\./g,'').replace(',','.'));return isNaN(n)?null:n};
+  var FMT=function(n){return n.toFixed(2).replace('.',',')};
+  var BRL=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
+  function info(d){
+    if(!d||d.tipo==='confianca')return null;
+    var pg=P(d.val),ds=P(d.desc);
+    if(pg==null||ds==null||ds<=0)return null;
+    return {pago:pg,desc:ds,orig:pg+ds};
+  }
+
+  /* 1) o desconto entra nos dados do comprovante (e é salvo junto no histórico) */
+  var _data=data;
+  data=function(){
+    var d=_data.apply(this,arguments);d.desc='';
+    if(d.tipo==='confianca')return d;
+    var pl=P(d.val),ds=P($('disc').value);
+    if(pl!=null&&ds!=null&&ds>0&&ds<=pl){d.plano=d.val;d.desc=$('disc').value.trim();d.val=FMT(pl-ds)}
+    return d};
+
+  /* 2) modelo premium */
+  var _dp=drawPremium;
+  drawPremium=function(x,d,W,H){
+    _dp(x,d,W,H);
+    var k=info(d);if(!k)return;
+    var F='"Poppins","Segoe UI","Helvetica Neue",Arial,sans-serif',novo=BRL(k.orig),velho=money(d.val)||('R$ '+d.val);
+    x.save();x.textBaseline='alphabetic';
+    x.font='700 22px '+F;var w=Math.max(x.measureText(velho).width,x.measureText(novo).width)+12;
+    x.fillStyle='#e4e0db';x.fillRect(776-w,574,w,34);
+    x.fillStyle='#1b1516';x.textAlign='right';x.fillText(novo,770,596);
+    x.textAlign='left';x.fillStyle='#6f6566';x.font='500 20px '+F;x.fillText('Valor do plano',80,716);
+    x.fillStyle='#e5200f';x.font='600 20px '+F;x.fillText('Desconto',80,756);
+    x.textAlign='right';x.fillStyle='#1b1516';x.font='600 22px '+F;x.fillText(novo,440,716);
+    x.fillStyle='#e5200f';x.font='700 22px '+F;x.fillText('\u2212 '+BRL(k.desc),440,756);
+    x.restore();
+  };
+
+  /* 3) modelo clássico: desenha a linha do desconto logo antes do painel de vencimento */
+  var _gl=glass;
+  glass=function(x,bg,a,b){
+    if(b===860){try{
+      var d=data(),k=info(d);
+      if(k){
+        var n=[d.user,d.plan,d.srv,money(d.val)||(d.val?'R$ '+d.val:''),d.paid].filter(Boolean).length,F='"Segoe UI",Arial,sans-serif',W=x.canvas.width;
+        x.save();x.textBaseline='alphabetic';
+        if(n<=4){
+          var y=520+70*n;
+          x.textAlign='left';x.fillStyle=C.mut;x.font='24px '+F;x.fillText('Desconto',80,y);
+          x.textAlign='right';x.fillStyle=C.red;x.font='bold 30px '+F;x.fillText('\u2212 '+BRL(k.desc),W-80,y);
+          x.strokeStyle=C.line;x.lineWidth=2;x.beginPath();x.moveTo(80,y+22);x.lineTo(W-80,y+22);x.stroke();
+        }else{
+          x.textAlign='left';x.fillStyle=C.mut;x.font='22px '+F;x.fillText('Desconto (plano '+BRL(k.orig)+')',80,850);
+          x.textAlign='right';x.fillStyle=C.red;x.font='bold 24px '+F;x.fillText('\u2212 '+BRL(k.desc),W-80,850);
+        }
+        x.restore();
+      }
+    }catch(e){}}
+    return _gl.apply(this,arguments);
+  };
+
+  /* 4) campo na tela: mostra o valor do plano e redesenha o comprovante */
+  function atualiza(){var o=$('orig'),pl=P($('val').value),ds=P($('disc').value);
+    if($('ctipo').checked||pl==null||ds==null||ds<=0){o.value='';return}
+    o.value=ds>pl?'Desconto maior que o plano':BRL(pl-ds)}
+  var _dr=draw;draw=function(){atualiza();return _dr.apply(this,arguments)};
+  $('plan').addEventListener('change',atualiza);
+  $('disc').addEventListener('input',function(){atualiza();draw()});
+  $('val').addEventListener('input',atualiza);
+  $('ctipo').addEventListener('change',atualiza);
+  $('clear').addEventListener('click',function(){$('disc').value='';atualiza();draw()});
+  /* limpar por outros caminhos (novo comprovante, cliente da lista) */
+  var _cf=clearForm;
+  clearForm=function(){_cf.apply(this,arguments);$('disc').value='';atualiza();draw()};
+  /* reabrir um comprovante do histórico traz o desconto de volta */
+  function reabre(e){var o=e.target.dataset&&e.target.dataset.o;if(!o)return;var h=db.receipts.find(function(z){return z.num==o});$('disc').value=(h&&h.desc)||'';
+    if(h&&h.tipo!=='confianca'&&h.desc){var pl=h.plano||(P(h.val)!=null&&P(h.desc)!=null?FMT(P(h.val)+P(h.desc)):h.val);$('val').value=pl}
+    atualiza();draw()}
+  $('hist').addEventListener('click',reabre);$('recent').addEventListener('click',reabre);
+  atualiza();
+})();
 </script>
 </body>
 </html>
