@@ -152,23 +152,163 @@ html,body{max-width:100%;overflow-x:clip}
 #v-fin>.card>.r>.bar{margin:0!important}
 #v-fin>.card>.r>.bar button{flex:1 1 auto}
 }
+
+/* === polimento visual v2.5 === */
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+main>section:not([hidden]){animation:vin .28s cubic-bezier(.2,.7,.2,1)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h1{font-size:clamp(26px,4.2vw,34px);letter-spacing:-.028em;line-height:1.15}
+.sub{font-size:15px;margin-bottom:24px}
+.stat b,.tbl td,.tbl th,.h b,.cr b,#p2,#p3,#f1,#f2,#f3,#f4{font-variant-numeric:tabular-nums}
+.card{border:1px solid rgba(70,25,25,.07);box-shadow:0 1px 1px rgba(60,20,20,.03),0 2px 4px rgba(60,20,20,.03),0 18px 36px -22px rgba(90,20,20,.22);transition:box-shadow .2s,transform .2s}
+.stat:hover{transform:translateY(-2px);box-shadow:0 1px 1px rgba(60,20,20,.03),0 22px 40px -20px rgba(90,20,20,.3)}
+h2{letter-spacing:-.01em}
+input,textarea,.sxb{min-height:44px;transition:border-color .15s,box-shadow .15s}
+input:hover,.sxb:hover{border-color:#d9c7c7}
+input:focus,textarea:focus,.sx.open .sxb{outline:0;border-color:var(--red);box-shadow:0 0 0 4px rgba(255,26,26,.12)}
+button{transition:transform .12s,filter .15s,box-shadow .15s,background .15s}
+button:active{transform:scale(.97)}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.nv{transition:background .15s,color .15s}
+.ng{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7f6e6f;padding:16px 14px 6px}
+nav>.ng:first-child{padding-top:4px}
+.tbl th{font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.tbl tr:hover td{background:rgba(255,26,26,.03)}
+.h:hover{background:rgba(255,26,26,.025)}
+.pill{font-weight:600;letter-spacing:.01em}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#d8cccc;border-radius:99px;border:2px solid transparent;background-clip:content-box}::-webkit-scrollbar-thumb:hover{background:#c5b3b3;background-clip:content-box;border:2px solid transparent}
+::selection{background:rgba(255,26,26,.18)}
+button:disabled{opacity:.42;cursor:not-allowed;filter:none!important;transform:none!important}
+/* chaves (switch) */
+.chk input[type=checkbox]{appearance:none;-webkit-appearance:none;width:44px!important;min-height:26px;height:26px;border-radius:99px;background:#d9cfcf;position:relative;flex:none;cursor:pointer;padding:0;border:0;transition:background .2s}
+.chk input[type=checkbox]::before{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:transform .2s}
+.chk input[type=checkbox]:checked{background:linear-gradient(180deg,#ff5a4d,#d10000)}
+.chk input[type=checkbox]:checked::before{transform:translateX(18px)}
+.chk input[type=checkbox]:focus{box-shadow:0 0 0 4px rgba(255,26,26,.15)}
+/* configurações */
+.cfg{display:grid;gap:20px;max-width:780px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0;padding-bottom:0}.row>div:first-child{min-width:0}
+.row small{display:block;color:var(--mut);font-size:13px;margin-top:2px}
+.row .sx,.row select{width:auto;min-width:140px}.row .num{width:96px;text-align:center}
+.sw{position:relative;display:inline-block;width:50px;height:30px;margin:0!important;flex:none}
+.sw input{position:absolute;opacity:0;width:0;height:0;min-height:0}
+.sw i{position:absolute;inset:0;background:#d9cfcf;border-radius:99px;transition:background .2s;cursor:pointer}
+.sw i::before{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked+i{background:linear-gradient(180deg,#ff5a4d,#d10000)}.sw input:checked+i::before{transform:translateX(20px)}
+.sw input:focus-visible+i{outline:2px solid var(--red);outline-offset:2px}
+#toptitle{margin-left:auto;color:#cdbdbe;font-size:14px;font-weight:600}
+@media(min-width:901px){#toptitle{display:none}}
+@media(max-width:900px){.row>div:first-child{flex:1}.row .sx,.row select{min-width:0;width:auto}.row .sx{max-width:150px}#csrvs .row{flex-wrap:wrap}#csrvs .row>.bar{width:100%}h1{font-size:26px}}
+</style>
+<style id="polish-v3">
+/* ===== Polimento v3: vidro, hierarquia e organização ===== */
+:root{--glass:rgba(255,255,255,.72);--glass-b:rgba(255,255,255,.85);--sh1:0 1px 1px rgba(60,20,20,.03),0 2px 6px rgba(60,20,20,.04),0 24px 44px -26px rgba(90,20,20,.28)}
+body{background:
+ radial-gradient(760px 520px at 96% -6%,rgba(255,64,52,.17),transparent 70%),
+ radial-gradient(640px 520px at -8% 46%,rgba(255,120,96,.13),transparent 70%),
+ radial-gradient(520px 420px at 60% 112%,rgba(255,60,50,.09),transparent 70%),var(--bg);background-attachment:fixed}
+main{padding-top:38px}
+.sub{max-width:62ch}
+
+/* barra lateral */
+aside{border-right:1px solid rgba(255,255,255,.06);box-shadow:inset -1px 0 0 rgba(255,255,255,.04)}
+.nv{padding:11px 14px;font-weight:500}
+.nv.on{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.1),0 8px 18px -10px rgba(0,0,0,.6)}
+.nv.on svg{color:#ff6a60}
+.ng{font-size:11px;letter-spacing:.1em}
+
+/* cartões em vidro */
+.card{background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.7));-webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);border:1px solid var(--glass-b);box-shadow:inset 0 1px 0 rgba(255,255,255,.95),var(--sh1);border-radius:20px}
+.card>h2:first-child{font-size:16px;margin-bottom:14px}
+.note{line-height:1.5}
+
+/* números de destaque */
+.stats{gap:14px}
+.stat{padding:18px 20px;position:relative;overflow:hidden}
+.stat span{font-size:13px;font-weight:500}
+.stat b{font-size:clamp(22px,3vw,30px);margin-top:8px}
+.stat.hi{background:linear-gradient(145deg,rgba(255,72,60,.96),rgba(168,0,0,.94));border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -18px 30px -18px rgba(90,0,0,.55),0 18px 36px -16px rgba(220,20,20,.65)}
+.stat.hi::after{content:"";position:absolute;left:-20%;right:-20%;top:-60%;height:100%;background:radial-gradient(closest-side,rgba(255,255,255,.28),transparent);pointer-events:none}
+
+/* painel de créditos por servidor */
+.cpanel-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:6px 2px 12px}
+.cpanel-h h2{margin:0;font-size:16px}
+.cpanel-link{font-size:13px;color:var(--dk);font-weight:600;cursor:pointer;border-radius:8px;padding:2px 4px}
+.cpanel-link:hover{text-decoration:underline}
+.cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.sc{--c1:#5b5b66;--c2:#1b1b22;--glow:rgba(120,120,140,.5);--fg:#fff;--fg2:rgba(255,255,255,.72);--trk:rgba(255,255,255,.2);--bar:#fff;
+ position:relative;overflow:hidden;isolation:isolate;border-radius:22px;padding:18px 18px 16px;min-height:158px;color:var(--fg);cursor:pointer;display:flex;flex-direction:column;gap:2px;
+ background:linear-gradient(150deg,var(--c1),var(--c2));
+ border:1px solid rgba(255,255,255,.34);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -22px 34px -24px rgba(0,0,0,.45),0 22px 40px -22px var(--glow);
+ -webkit-backdrop-filter:blur(16px) saturate(1.7);backdrop-filter:blur(16px) saturate(1.7);
+ transition:transform .18s,box-shadow .18s}
+.sc::before{content:"";position:absolute;z-index:-1;width:150px;height:150px;right:-44px;top:-52px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.42),transparent);filter:blur(2px)}
+.sc::after{content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.2),transparent 42%);pointer-events:none}
+.sc:hover{transform:translateY(-3px)}
+.sc:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.sc .sn{font-size:14px;font-weight:600;letter-spacing:.01em;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sc .sb{display:block;font-size:clamp(34px,4.4vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.05;margin-top:10px;font-variant-numeric:tabular-nums}
+.sc .sl{font-size:12.5px;color:var(--fg2);margin-top:2px}
+.sc .st{height:6px;border-radius:99px;background:var(--trk);overflow:hidden;margin-top:auto}
+.sc .st i{display:block;height:100%;border-radius:inherit;background:var(--bar);min-width:0}
+.sc .sm{font-size:12px;color:var(--fg2);margin-top:8px;display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.sc .tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3)}
+.sc.low .tag{background:rgba(255,40,40,.9);color:#fff;border-color:rgba(255,255,255,.4)}
+.sc.black{--c1:#3b3b42;--c2:#09090b;--glow:rgba(20,20,26,.7)}
+.sc.lexus{--c1:#4d8bff;--c2:#1746c9;--glow:rgba(40,100,255,.6)}
+.sc.fast{--c1:#ffd23f;--c2:#f2a100;--glow:rgba(255,184,0,.6);--fg:#2b1c00;--fg2:rgba(43,28,0,.72);--trk:rgba(43,28,0,.16);--bar:#2b1c00}
+.sc.fast::before{background:radial-gradient(closest-side,rgba(255,255,255,.6),transparent)}
+.sc.fast .tag{background:rgba(255,255,255,.45);border-color:rgba(255,255,255,.6)}
+.sc.clube{--c1:#9b6bff;--c2:#5b21c9;--glow:rgba(124,58,237,.6)}
+.sc.outro{--c1:#6b5b5d;--c2:#2a2021;--glow:rgba(60,30,30,.5)}
+
+/* cobranças */
+.tb{padding:8px 15px;font-weight:500}
+.cr{border-radius:12px;padding:14px 10px;transition:background .15s}
+.cr:hover{background:rgba(255,26,26,.03)}
+.cr:last-child{border-bottom:0}
+
+/* backup */
+.bk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;max-width:1040px}
+.bk .wide{grid-column:1/-1}
+.bk .card{max-width:none!important;margin:0!important}
+.lb.p-lb{background:linear-gradient(180deg,rgba(255,96,84,.94),rgba(198,0,0,.9));color:#fff;font-weight:600;border-color:rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -10px 16px -10px rgba(110,0,0,.55),0 10px 22px -10px rgba(255,26,26,.85)}
+.lb{display:inline-flex;align-items:center;min-height:40px}
+
+/* janelas */
+dialog{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.88));-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);border:1px solid rgba(255,255,255,.9);border-radius:22px}
+dialog h2{font-size:18px}
+
+@media(max-width:1100px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){
+ .bk{grid-template-columns:minmax(0,1fr)}
+ .cgrid{gap:10px}
+ .sc{padding:14px 14px 13px;min-height:138px;border-radius:20px}
+ .sc .sb{font-size:34px}
+ .sc .sm{font-size:11px;flex-wrap:wrap;gap:2px 8px}
+ main{padding-top:18px}
+}
+@media(prefers-reduced-motion:reduce){.sc,.sc:hover{transition:none;transform:none}}
 </style>
 </head>
 <body>
-<div id="top"><button id="hamb" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><img id="topimg" alt="Reikon"></div>
+<div id="top"><button id="hamb" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><img id="topimg" alt="Reikon"><span id="toptitle"></span></div>
 <div id="scrim"></div>
 <nav id="bnav"><button data-go="rec"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg><span>Comprovantes</span></button><button data-go="cob"><svg viewBox="0 0 24 24"><path d="M17 11a3 3 0 100-6M21.5 19c-.4-2.4-1.8-4-4-4.6M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/></svg><span>Cobranças</span></button><button data-go="per"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg><span>Período</span></button><button id="bmenu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button></nav>
 <div class="app">
 <aside>
 <img id="wm" alt="Reikon">
 <nav>
-<button class="nv" data-go="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Visão geral</button>
+<div class="ng">Operação</div><button class="nv" data-go="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>Visão geral</button>
 <button class="nv" data-go="rec"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg>Comprovantes</button>
 <button class="nv" data-go="cob"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 11a3 3 0 100-6M21.5 19c-.4-2.4-1.8-4-4-4.6"/></svg>Cobranças</button>
-<button class="nv" data-go="per"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>Período</button>
+<div class="ng">Gestão</div><button class="nv" data-go="per"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>Período</button>
 <button class="nv" data-go="fin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.4.7-2.4 1.8 0 2.6 5 1.2 5 3.9 0 1.1-1.1 1.9-2.6 1.9-1.2 0-2.2-.5-2.7-1.4M12 6.5V8M12 16v1.5"/></svg>Financeiro</button>
-<button class="nv" data-go="seg"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Segurança</button>
+<div class="ng">Sistema</div><button class="nv" data-go="seg"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Segurança</button>
 <button class="nv" data-go="bkp"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3"/></svg>Backup</button>
+<button class="nv" data-go="cfg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configurações</button>
 </nav>
 <div class="ft">Painel v<span id="ver"></span><br>Dados salvos neste navegador<div class="sst" id="sst"></div><button class="s" id="inst" hidden style="margin-top:10px">Instalar app</button></div>
 </aside>
@@ -183,6 +323,8 @@ html,body{max-width:100%;overflow-x:clip}
 <div class="card stat"><span>Total emitido</span><b id="s1">0</b></div>
 <div class="card stat"><span>Último nº</span><b id="s4">-</b></div>
 </div>
+<div class="cpanel-h"><h2>Créditos por servidor</h2><span class="cpanel-link" id="cpgo" role="button" tabindex="0">Ver financeiro</span></div>
+<div class="cgrid" id="cgrid"></div>
 <div class="card"><div class="bar" style="margin:0 0 8px;justify-content:space-between"><h2 style="margin:0">Últimos comprovantes</h2><button class="p" id="newhome">Novo comprovante</button></div><div id="recent"></div></div>
 </section>
 
@@ -201,7 +343,7 @@ html,body{max-width:100%;overflow-x:clip}
 <div class="r"><div><label>Desconto (R$) — opcional</label><input id="disc" inputmode="decimal" placeholder="0,00"></div><div><label>Total a pagar (plano − desconto)</label><input id="orig" readonly tabindex="-1" placeholder="—"></div></div>
 <div class="r"><div><label>Plano</label><input id="plan" list="plans" placeholder="Mensal"><datalist id="plans"></datalist></div><div><label>Servidor</label><select id="srv"><option></option><option>Lexus</option><option>Black</option><option>Fast</option><option>Clube</option></select></div></div>
 <label>Nº do comprovante (avança sozinho)</label><input id="num" inputmode="numeric" style="max-width:160px">
-<label class="chk"><input type="checkbox" id="ctipo"> Renovação de confiança (3 dias, não gasta crédito)</label>
+<label class="chk"><input type="checkbox" id="ctipo"> Renovação de confiança (não gasta crédito)</label>
 <label class="chk"><input type="checkbox" id="autorn"> Renovar o cliente automaticamente ao gerar (usa o próximo vencimento do comprovante)</label>
 <div class="bar"><button class="p" id="gen">Gerar comprovante</button><button id="png">Baixar PNG</button><button id="cpng">Copiar PNG</button><button id="pdf">Baixar PDF</button></div>
 <div class="bar" style="margin-top:8px"><button class="s" id="msg">Copiar mensagem</button><button class="s" id="saveplan">Salvar plano e valor</button><button class="s" id="clear">Limpar</button><button class="s" id="newcli">Cliente novo → Notion</button></div>
@@ -218,7 +360,7 @@ html,body{max-width:100%;overflow-x:clip}
 <h1>Cobranças</h1><p class="sub">Clientes por servidor. Gere a mensagem de cobrança com os dados de cada um.</p>
 <div class="tabs" id="tabs"></div>
 <div class="card">
-<div class="bar" style="margin:0 0 6px;justify-content:space-between"><span class="bar" style="margin:0"><input id="cq" placeholder="Buscar por nome ou usuário" style="max-width:260px"><select id="cord" class="ord"><option value="venc">Vencimento: mais antigo</option><option value="vencd">Vencimento: mais novo</option><option value="nome">Nome A–Z</option><option value="nomed">Nome Z–A</option><option value="valor">Maior valor</option><option value="valora">Menor valor</option><option value="usu">Usuário</option></select></span><span class="bar" style="margin:0"><button class="s" id="tplbtn">Personalizar</button><label class="lb">Importar<input id="cimp" type="file" accept=".json,.csv" hidden></label><button class="p" id="newc">Novo cliente</button></span></div>
+<div class="bar" style="margin:0 0 6px;justify-content:space-between"><span class="bar" style="margin:0"><input id="cq" placeholder="Buscar por nome ou usuário" style="max-width:260px"><select id="cord" class="ord"><option value="venc">Vencimento: mais antigo</option><option value="vencd">Vencimento: mais novo</option><option value="nome">Nome A–Z</option><option value="nomed">Nome Z–A</option><option value="valor">Maior valor</option><option value="valora">Menor valor</option><option value="usu">Usuário</option></select></span><span class="bar" style="margin:0"><button class="s" id="tplbtn">Personalizar</button><button class="p" id="newc">Novo cliente</button></span></div>
 <div id="ctab"></div></div>
 <div class="card" id="tplcard" style="margin-top:20px" hidden><h2>Personalizar mensagens</h2>
 <div class="r"><div><label>Modelo</label><select id="tsel"></select></div><div><label>Usar automaticamente quando o cliente estiver</label><select id="tquando"><option value="">Qualquer situação</option><option value="vencido">Vencido</option><option value="breve">Vence em até 3 dias</option><option value="dia">Em dia</option></select></div></div>
@@ -266,27 +408,54 @@ html,body{max-width:100%;overflow-x:clip}
 <div class="card"><h2>Histórico de alterações</h2><input id="logq" placeholder="Buscar no histórico" style="margin-bottom:8px"><div class="hl" id="logl" style="max-height:420px"></div></div>
 </section>
 
+<section id="v-cfg" hidden>
+<h1>Configurações</h1><p class="sub">Ajustes do painel, dos comprovantes e dos servidores.</p>
+<div class="cfg">
+<div class="card"><h2>Comprovantes</h2>
+<div class="row"><div><b>Modelo do comprovante</b><small>Visual usado ao gerar PNG e PDF.</small></div><select id="cmodelo"><option value="premium">Premium</option><option value="classico">Clássico</option></select></div>
+<div class="row"><div><b>Renovar o cliente ao gerar</b><small>Usa o "próximo vencimento" do comprovante.</small></div><label class="sw"><input type="checkbox" id="cauto"><i></i></label></div></div>
+<div class="card"><h2>Renovação de confiança</h2>
+<div class="row"><div><b>Dias concedidos</b><small>Quanto o cliente ganha na renovação de confiança.</small></div><input id="cconfd" type="number" inputmode="numeric" min="1" max="15" class="num"></div>
+<div class="row"><div><b>Intervalo entre usos</b><small>Dias até poder usar de novo, por cliente.</small></div><input id="cconfi" type="number" inputmode="numeric" min="1" max="365" class="num"></div></div>
+<div class="card"><h2>Servidores</h2><p class="note" style="margin:0 0 6px">Cada servidor vira uma aba em Cobranças. A abreviação aparece em "Copiar nome".</p><div id="csrvs"></div>
+<div class="r" style="margin-top:14px"><div><label>Novo servidor</label><input id="nsrv" placeholder="Nome"></div><div><label>Abreviação</label><input id="nabr" maxlength="6" placeholder="ABC" style="text-transform:uppercase"></div></div>
+<div class="bar"><button class="p" id="addsrv">Adicionar servidor</button></div></div>
+<div class="card"><h2>Mensagens de cobrança</h2><p class="note" style="margin:0">Modelos de texto, marcadores e formato de datas e valores.</p><div class="bar"><button class="s" id="cmsg">Abrir personalização</button></div></div>
+<div class="card"><h2>Segurança e dados</h2>
+<div class="row"><div><b>PIN de abertura</b><small id="cpin"></small></div><button class="s" data-go="seg">Abrir</button></div>
+<div class="row"><div><b>Sincronização</b><small id="csync"></small></div><button class="s" data-go="bkp">Abrir</button></div>
+<div class="row"><div><b>Seus dados</b><small id="cdados"></small></div></div></div>
+<div class="card"><h2>Sobre</h2><p class="note" id="cabout" style="margin:0"></p></div>
+</div></section>
+
 <section id="v-bkp" hidden>
-<h1>Backup</h1><p class="sub">Seus dados ficam salvos no navegador deste computador.</p>
-<div class="card" style="max-width:640px">
-<h2>Proteja seus dados</h2>
-<p class="note">Atualizar o painel (trocar o arquivo por uma versão nova) não apaga os dados, desde que você abra no mesmo navegador. Limpar os dados do navegador, trocar de navegador ou de computador apaga. Por isso, baixe um backup de vez em quando e antes de cada atualização.</p>
-<div class="bar"><button class="p" id="exp">Baixar backup</button><label class="s" style="margin:0;padding:10px 16px;border-radius:10px;background:#f1e8e8;color:var(--ink);cursor:pointer;width:auto">Restaurar backup<input id="imp" type="file" accept=".json" hidden></label><span id="bmsg"></span></div>
+<h1>Backup</h1><p class="sub">Proteja, sincronize e restaure os dados do painel.</p>
+<div class="bk">
+<div class="card">
+<h2>Backup e restauração</h2>
+<p class="note">Os dados ficam salvos no navegador deste aparelho. Atualizar o painel (trocar o arquivo por uma versão nova) não apaga nada se você abrir no mesmo navegador. Limpar os dados do navegador, trocar de navegador ou de computador apaga. Baixe um backup de vez em quando e antes de cada atualização.</p>
+<div class="bar"><button class="p" id="exp">Baixar backup</button><label class="lb">Restaurar backup<input id="imp" type="file" accept=".json" hidden></label><span id="bmsg"></span></div>
 <p class="note" id="lastb" style="margin-top:14px"></p>
 </div>
-<div class="card" style="max-width:640px;margin-top:20px">
-<h2>Clientes novos para o Notion</h2>
-<p class="note">Pedidos criados pelo botão "Cliente novo → Notion" na aba Comprovantes. Copie e cole na conversa com o Claude para ele cadastrar no Notion. Ficam guardados e sincronizados.</p>
-<div class="bar"><button class="p" id="nall">Copiar todos pendentes</button><button class="s" id="ntxt">Baixar arquivo (.txt)</button></div>
-<div id="nlist" style="margin-top:10px"></div>
+<div class="card">
+<h2>Sincronizar clientes</h2>
+<p class="note">Traga clientes de um arquivo .json ou .csv, por exemplo exportado do Notion. Você escolhe se atualiza os clientes que já existem ou só adiciona os novos.</p>
+<div class="bar"><label class="lb p-lb">Sincronizar clientes<input id="cimp" type="file" accept=".json,.csv" hidden></label></div>
 </div>
-<div class="card" style="max-width:640px;margin-top:20px">
+<div class="card wide">
 <h2>Sincronização entre aparelhos (GitHub)</h2>
 <p class="note">Guarda os seus dados em um repositório <b>privado</b> do GitHub, para ver os mesmos dados no PC e no celular. O token fica salvo só neste aparelho e não entra nos backups.</p>
 <label>Repositório de dados</label><input id="syrepo" placeholder="seu-usuario/painel-dados">
 <div class="r"><div><label>Token do GitHub</label><input id="sytoken" type="password" autocomplete="off"></div><div><label>Arquivo</label><input id="sypath" value="data.json"></div></div>
 <div class="bar"><button class="p" id="syconn">Conectar e sincronizar</button><button class="s" id="syrun">Sincronizar agora</button><button class="s" id="sydis">Desconectar</button></div>
 <p class="note" id="symsg" style="margin-top:10px"></p>
+</div>
+<div class="card wide">
+<h2>Clientes novos para o Notion</h2>
+<p class="note">Pedidos criados pelo botão "Cliente novo → Notion" na aba Comprovantes. Copie e cole na conversa com o Claude para ele cadastrar no Notion. Ficam guardados e sincronizados.</p>
+<div class="bar"><button class="p" id="nall">Copiar todos pendentes</button><button class="s" id="ntxt">Baixar arquivo (.txt)</button></div>
+<div id="nlist" style="margin-top:10px"></div>
+</div>
 </div>
 </section>
 
@@ -305,7 +474,7 @@ html,body{max-width:100%;overflow-x:clip}
 <div class="bar"><button class="p" id="dpsave">Salvar</button><button class="s" id="dpno">Cancelar</button></div></dialog>
 <dialog id="rdlg"><h2>Renovar · <span id="rwho"></span></h2>
 <p class="note" id="rinfo" style="margin:0"></p>
-<div class="ropts"><button type="button" class="ro" data-k="d3"><b>Confiança · 3 dias</b><span id="rd3"></span><small id="rdc">1 vez a cada 30 dias · não gasta crédito</small></button><button type="button" class="ro" data-k="m1"><b>1 mês</b><span id="rm1"></span><small>mesma data do próximo mês</small></button></div>
+<div class="ropts"><button type="button" class="ro" data-k="d3"><b id="rdt">Confiança · 3 dias</b><span id="rd3"></span><small id="rdc">1 vez a cada 30 dias · não gasta crédito</small></button><button type="button" class="ro" data-k="m1"><b>1 mês</b><span id="rm1"></span><small>mesma data do próximo mês</small></button></div>
 <p class="note sh" id="rwarn" style="margin:0 0 8px"></p>
 <div class="bar" style="margin-top:6px"><button class="p" id="rok">Confirmar renovação</button><button id="rcomp">Renovar + comprovante</button><button class="s" id="rother">Outra data…</button><button class="s" id="rno">Cancelar</button></div></dialog>
 <dialog id="cdlg"><h2 id="ctitle">Cliente</h2>
@@ -321,7 +490,7 @@ html,body{max-width:100%;overflow-x:clip}
 <div id="lock" hidden><div class="lk"><img id="lkimg" alt=""><h2 style="margin:0">Painel bloqueado</h2><input id="lkin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"><button class="p" id="lkok">Entrar</button><p id="lkmsg"></p><small>Esqueceu o PIN? Limpe os dados do site no navegador e restaure o backup ou sincronize pelo GitHub.</small></div></div>
 <div id="toast" popover="manual"></div>
 <script>
-const APP_VER='2.4',KEY='reikon_db',VER=8;
+const APP_VER='2.5',KEY='reikon_db',VER=8;
 const DEF_TPL='Olá, {primeiro_nome}! 👋\n\nPassando para lembrar que o seu acesso da Reikon TV vence em {vencimento}.\n\nUsuário: {usuario}\nPlano: {plano}\nValor: {valor}\n\nPara renovar, é só enviar o pix e me avisar por aqui. Obrigado!';
 const $=id=>document.getElementById(id);
 function toast(m,act){const t=$('toast');t.textContent=m;if(act){const b=document.createElement('button');b.className='tbtn';b.textContent=act.label;b.onclick=()=>{act.fn();try{t.hidePopover()}catch(e){}};t.append(b)}
@@ -340,7 +509,7 @@ function ld(k,src){return new Promise(r=>{const i=new Image();i.onload=()=>{IMG[
 
 /* ===== DADOS: separados do código; versionados para atualizações ===== */
 function migrate(d){
-  d.receipts=d.receipts||[];d.plans=d.plans||[];d.lastBackup=d.lastBackup||0;d.clients=d.clients||[];d.template=d.template||DEF_TPL;if(!d.templates||!d.templates.length)d.templates=[{id:'t1',nome:'Padrão',quando:'',texto:d.template}];d.novos=d.novos||[];d.lixo=(d.lixo||[]).filter(x=>Date.now()-x.at<30*864e5);d.log=d.log||[];d.cred=d.cred||[];d.desp=d.desp||[];d.opt=Object.assign({auto:true,modelo:'premium'},d.opt||{});d.nomeFmt=d.nomeFmt||'{nome} │ {abrev}{valor} │ ID: {usuario}';d.abrev=Object.assign({Black:'BLK',Lexus:'LXS',Fast:'FST',Clube:'CLB'},d.abrev||{});d.ord=d.ord||'venc';d.hord=d.hord||'recente';d.fmt=Object.assign({data:'br',valor:'rs',nome:'normal'},d.fmt||{});
+  d.receipts=d.receipts||[];d.plans=d.plans||[];d.lastBackup=d.lastBackup||0;d.clients=d.clients||[];d.template=d.template||DEF_TPL;if(!d.templates||!d.templates.length)d.templates=[{id:'t1',nome:'Padrão',quando:'',texto:d.template}];d.novos=d.novos||[];d.servidores=(d.servidores&&d.servidores.length)?d.servidores:['Lexus','Black','Fast','Clube'];d.clients.forEach(c=>{if(c.servidor&&!d.servidores.includes(c.servidor))d.servidores.push(c.servidor)});d.lixo=(d.lixo||[]).filter(x=>Date.now()-x.at<30*864e5);d.log=d.log||[];d.cred=d.cred||[];d.desp=d.desp||[];d.opt=Object.assign({auto:true,modelo:'premium'},d.opt||{});d.nomeFmt=d.nomeFmt||'{nome} │ {abrev}{valor} │ ID: {usuario}';d.abrev=Object.assign({Black:'BLK',Lexus:'LXS',Fast:'FST',Clube:'CLB'},d.abrev||{});d.ord=d.ord||'venc';d.hord=d.hord||'recente';d.fmt=Object.assign({data:'br',valor:'rs',nome:'normal'},d.fmt||{});
   /* futuras versões: if(d.v<2){ ...ajustes...; d.v=2 } */
   d.v=VER;return d}
 function load(){
@@ -355,9 +524,10 @@ try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}ca
 persist();
 
 /* ===== NAVEGAÇÃO ===== */
-const views=['home','rec','cob','per','fin','seg','bkp'];
+const views=['home','rec','cob','per','fin','seg','bkp','cfg'];
+const TITLES={home:'Visão geral',rec:'Comprovantes',cob:'Cobranças',per:'Período',fin:'Financeiro',seg:'Segurança',bkp:'Backup',cfg:'Configurações'};
 function go(v){views.forEach(x=>{$('v-'+x).hidden=x!==v;const b=document.querySelector(`.nv[data-go="${x}"]`);b&&b.classList.toggle('on',x===v)});document.querySelectorAll('#bnav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===v));document.body.classList.remove('menu');
-  if(v==='home')renderHome();if(v==='rec'){$('modelo').value=db.opt.modelo||'premium';draw();$('autorn').checked=db.opt.auto}if(v==='bkp')renderBkp();if(v==='cob')renderCob();if(v==='per')renderPer();if(v==='fin')renderFin();if(v==='seg')renderSeg();scrollTo(0,0)}
+  if(v==='home')renderHome();if(v==='rec'){$('modelo').value=db.opt.modelo||'premium';draw();$('autorn').checked=db.opt.auto}if(v==='bkp')renderBkp();if(v==='cob')renderCob();if(v==='per')renderPer();if(v==='fin')renderFin();if(v==='seg')renderSeg();if(v==='cfg')renderCfg();$('toptitle').textContent=TITLES[v]||'';scrollTo(0,0)}
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 
 /* ===== VISÃO GERAL ===== */
@@ -496,7 +666,7 @@ const isoBR=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s||'');return m?`${m[3]}
 const brISO=s=>{const m=/^(\d{2})\/?(\d{2})\/?(\d{4})$/.exec((s||'').trim());return m&&+m[2]>=1&&+m[2]<=12&&+m[1]>=1&&+m[1]<=31?`${m[3]}-${m[2]}-${m[1]}`:''};
 const toISO=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const dayDiff=iso=>{if(!iso)return null;const [y,m,d]=iso.split('-').map(Number),t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-t)/864e5)};
-function servers(){const s=[...SRV];db.clients.forEach(c=>{if(c.servidor&&!s.includes(c.servidor))s.push(c.servidor)});return s}
+function servers(){const s=[...db.servidores];db.clients.forEach(c=>{if(c.servidor&&!s.includes(c.servidor))s.push(c.servidor)});return s}
 const shared=c=>db.clients.filter(o=>o!==c&&c.usuario&&o.usuario===c.usuario&&o.servidor===c.servidor);
 function stat(c){const n=dayDiff(c.venc);if(n===null)return['','sem data'];if(n<0)return['r',`vencido há ${-n}d`];if(n<=3)return['y',n===0?'vence hoje':`vence em ${n}d`];return['g',`em dia (${n}d)`]}
 function renderCob(){
@@ -531,13 +701,13 @@ $('mwa').onclick=()=>{let p=(curC.phone||'').replace(/\D/g,'');if(!p)return toas
 let rC=null,rK='m1';
 const addDays=(iso,n)=>{const [y,m,d]=iso.split('-').map(Number);return toISO(new Date(y,m-1,d+n))};
 const addMonth=iso=>{const [y,m,d]=iso.split('-').map(Number);let dt=new Date(y,m,d);if(dt.getDate()!==d)dt=new Date(y,m+1,0);return toISO(dt)};
-const rNew=(iso,k)=>k==='d3'?addDays(iso,3):addMonth(iso);
+const rNew=(iso,k)=>k==='d3'?addDays(iso,db.opt.confDias||3):addMonth(iso);
 const vivo=c=>{const n=dayDiff(c.venc);return n!==null&&n>=0};
 const baseDate=c=>vivo(c)?c.venc:toISO(new Date());
 function selR(k){rK=k;document.querySelectorAll('.ro').forEach(x=>x.classList.toggle('on',x.dataset.k===k))}
 function renovar(c){rC=c;const g=[c,...shared(c)],b=baseDate(c);$('rwho').textContent=g.map(x=>x.nome).join(' e ');
   $('rinfo').textContent=vivo(c)?'Vencimento atual: '+isoBR(c.venc)+'. A renovação soma a partir dele.':(c.venc?'Vencido em '+isoBR(c.venc)+'. A contagem começa hoje ('+isoBR(b)+').':'Sem vencimento cadastrado. A contagem começa hoje.');
-  $('rd3').textContent=isoBR(rNew(b,'d3'));const ci=confInfo(c);$('rdc').textContent=ci.ok?'1 vez a cada 30 dias · não gasta crédito':'Já usada em '+isoBR(ci.ult)+'. Libera em '+isoBR(ci.lib);document.querySelector('.ro[data-k=d3]').classList.toggle('off',!ci.ok);$('rdlg').dataset.lib=ci.ok?'':isoBR(ci.lib);$('rm1').textContent=isoBR(rNew(b,'m1'));
+  $('rd3').textContent=isoBR(rNew(b,'d3'));const ci=confInfo(c);$('rdt').textContent='Confiança · '+(db.opt.confDias||3)+' dias';$('rdc').textContent=ci.ok?'1 vez a cada '+(db.opt.confInt||30)+' dias · não gasta crédito':'Já usada em '+isoBR(ci.ult)+'. Libera em '+isoBR(ci.lib);document.querySelector('.ro[data-k=d3]').classList.toggle('off',!ci.ok);$('rdlg').dataset.lib=ci.ok?'':isoBR(ci.lib);$('rm1').textContent=isoBR(rNew(b,'m1'));
   $('rwarn').textContent=g.length>1?'Usuário compartilhado: os '+g.length+' clientes serão renovados juntos.':'';selR('m1');$('rdlg').showModal()}
 document.querySelectorAll('.ro').forEach(x=>x.onclick=()=>{if(x.classList.contains('off'))return toast('Renovação de confiança só pode ser feita de novo em '+$('rdlg').dataset.lib+'.');selR(x.dataset.k)});
 $('rok').onclick=()=>{const g=[rC,...shared(rC)],iso=rNew(baseDate(rC),rK);renovarClientes(g,iso,rK==='d3'?'Renovação de confiança':'Renovação manual',{conf:rK==='d3'});persist();$('rdlg').close();renderCob();toast('Renovado até '+isoBR(iso)+(g.length>1?' ('+g.length+' clientes)':''))};
@@ -748,7 +918,7 @@ function lixo(tipo,dados,rot){db.lixo.unshift({id:'x'+Date.now()+Math.random().t
 function renovarClientes(g,iso,origem,o){const antes=g.map(c=>({id:c.id,venc:c.venc||'',ultConf:c.ultConf||'',confAte:c.confAte||''})),nomes=g.map(c=>c.nome).join(' e ');g.forEach(c=>{c.venc=iso;if(o&&o.conf){c.ultConf=toISO(new Date());c.confAte=iso}});return logar('renovação',`${origem}: ${nomes} até ${isoBR(iso)}`,{antes,nomes})}
 function undoLog(id){const e=db.log.find(x=>x.id===id);if(!e||!e.undo||e.desfeito)return;
   e.undo.antes.forEach(a=>{const c=db.clients.find(x=>x.id===a.id);if(c){c.venc=a.venc;if('ultConf' in a){c.ultConf=a.ultConf||'';c.confAte=a.confAte||''}}});e.desfeito=true;logar('renovação','Renovação desfeita: '+e.undo.nomes);persist();renderCob();renderSeg();toast('Renovação desfeita.')}
-function confInfo(c){const g=[c,...shared(c)],u=g.map(x=>x.ultConf).filter(Boolean).sort().pop();if(!u)return{ok:true};const lib=addDays(u,30);return{ok:toISO(new Date())>=lib,ult:u,lib}}
+function confInfo(c){const g=[c,...shared(c)],u=g.map(x=>x.ultConf).filter(Boolean).sort().pop();if(!u)return{ok:true};const lib=addDays(u,db.opt.confInt||30);return{ok:toISO(new Date())>=lib,ult:u,lib}}
 function confPill(c){return c.confAte&&c.venc===c.confAte?` <span class="pill c">confiança até ${isoBR(c.confAte).slice(0,5)}</span>`:''}
 function autoRenew(rec){if(!db.opt.auto)return null;const iso=brISO(rec.due);if(!iso||!rec.user)return null;const tr=rec.tipo==='confianca';
   const m=db.clients.filter(c=>c.usuario===rec.user&&(!rec.srv||!c.servidor||c.servidor===rec.srv));
@@ -872,7 +1042,7 @@ function drawPremium(x,d,W,H){
   x.fillStyle='#e4e0db';rr(x,62,550,726,84,8);x.fill();
   x.fillStyle=INK;x.font=`600 22px ${F}`;x.fillText(tr?'Renovação de confiança':'Renovação de acesso',80,583);
   x.fillStyle=MUT;x.font=`500 17px ${F}`;x.fillText('Reikon TV'+(d.srv?' · '+d.srv:''),80,612);
-  x.fillStyle=INK;x.font=`500 21px ${F}`;x.fillText(tr?'3 dias':(d.plan||'—'),420,596);x.fillText(d.paid||'—',545,596);
+  x.fillStyle=INK;x.font=`500 21px ${F}`;x.fillText(tr?((db.opt.confDias||3)+' dias'):(d.plan||'—'),420,596);x.fillText(d.paid||'—',545,596);
   const val=tr?'Sem custo':(money(d.val)||(d.val?'R$ '+d.val:'—'));
   x.textAlign='right';x.font=`700 22px ${F}`;x.fillText(tr?'—':val,770,596);
   x.strokeStyle='rgba(27,21,22,.18)';x.beginPath();x.moveTo(70,676);x.lineTo(780,676);x.stroke();
@@ -882,7 +1052,7 @@ function drawPremium(x,d,W,H){
   x.fillStyle='#fff';x.font=`800 58px ${F}`;x.fillText(d.due||'--/--/----',70,932);
   x.fillStyle='#ff4a3a';x.beginPath();x.arc(497,887,9,0,7);x.fill();
   x.fillStyle=INK;x.font=`800 19px ${F}`;x.fillText('OBSERVAÇÕES',585,850);
-  (tr?['Acesso liberado por 3 dias','Uso a cada 30 dias']:['Renovação confirmada','Guarde este comprovante']).forEach((t,i)=>{const y=890+i*34;x.strokeStyle=INK;x.lineWidth=1.6;x.strokeRect(585,y-14,16,16);x.beginPath();x.moveTo(588,y-6);x.lineTo(592,y-1);x.lineTo(599,y-12);x.stroke();x.fillStyle=MUT;x.font=`500 14px ${F}`;x.fillText(t,611,y)});
+  (tr?['Acesso liberado por '+(db.opt.confDias||3)+' dias','Uso a cada '+(db.opt.confInt||30)+' dias']:['Renovação confirmada','Guarde este comprovante']).forEach((t,i)=>{const y=890+i*34;x.strokeStyle=INK;x.lineWidth=1.6;x.strokeRect(585,y-14,16,16);x.beginPath();x.moveTo(588,y-6);x.lineTo(592,y-1);x.lineTo(599,y-12);x.stroke();x.fillStyle=MUT;x.font=`500 14px ${F}`;x.fillText(t,611,y)});
   x.fillStyle=INK;x.font=`italic 700 30px ${F}`;x.fillText('Obrigado por renovar!',70,1086);
   x.textAlign='right';x.font=`700 22px ${F}`;x.fillText('Reikon TV',780,1070);
   x.fillStyle=DK;rr(x,610,1086,170,32,16);x.fill();x.fillStyle='#fff';x.font=`600 12px ${F}`;x.textAlign='center';x.fillText('COMPROVANTE DIGITAL',695,1107);x.textAlign='left';
@@ -891,6 +1061,30 @@ function drawPremium(x,d,W,H){
   vt('Data',dt.replace(/^./,c=>c.toUpperCase()),852,580);vt('Nº',pad(d.num),852,840);
   x.restore()}
 $('modelo').onchange=()=>{db.opt.modelo=$('modelo').value;persist();draw()};
+
+/* ===== CONFIGURAÇÕES ===== */
+function renderCfg(){
+  $('cmodelo').value=db.opt.modelo||'premium';$('cauto').checked=!!db.opt.auto;$('cconfd').value=db.opt.confDias||3;$('cconfi').value=db.opt.confInt||30;
+  const sv=servers(),k=db.servidores.length;
+  $('csrvs').innerHTML=sv.map((s,i)=>{const n=db.clients.filter(c=>c.servidor===s).length,ext=i>=k;
+    return `<div class="row"><div><b>${esc(s)}</b><small>${n} cliente(s)</small></div><div class="bar" style="margin:0;gap:6px;flex-wrap:nowrap"><input data-ab="${esc(s)}" value="${esc(db.abrev[s]||'')}" maxlength="6" aria-label="Abreviação" style="width:82px;text-transform:uppercase"><button class="s" data-mv="${i}:-1" aria-label="Subir" ${i===0||ext?'disabled':''}>▲</button><button class="s" data-mv="${i}:1" aria-label="Descer" ${i>=k-1||ext?'disabled':''}>▼</button><button class="s" data-rm="${esc(s)}" ${n||ext?'disabled title="Em uso"':''}>Remover</button></div></div>`}).join('');
+  $('cpin').textContent=pinCfg()?'Ativo neste aparelho.':'Desativado neste aparelho.';
+  $('csync').textContent=syOn()?'Conectado a '+sy.repo+'.':'Só neste aparelho.';
+  $('cdados').textContent=`${db.clients.length} clientes · ${db.receipts.length} comprovantes · ${db.log.length} registros no histórico`;
+  $('cabout').textContent='Painel Reikon TV · versão '+APP_VER}
+$('cmodelo').onchange=()=>{db.opt.modelo=$('cmodelo').value;$('modelo').value=db.opt.modelo;persist();draw()};
+$('cauto').onchange=()=>{db.opt.auto=$('cauto').checked;$('autorn').checked=db.opt.auto;persist()};
+const clampN=(el,mn,mx,df)=>{let v=parseInt(el.value,10);if(isNaN(v))v=df;v=Math.min(mx,Math.max(mn,v));el.value=v;return v};
+$('cconfd').onchange=()=>{db.opt.confDias=clampN($('cconfd'),1,15,3);persist()};
+$('cconfi').onchange=()=>{db.opt.confInt=clampN($('cconfi'),1,365,30);persist()};
+$('cmsg').onclick=()=>{go('cob');$('tplcard').hidden=false;renderTpl();$('tplcard').scrollIntoView({behavior:'smooth'})};
+$('csrvs').onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.mv){const [i,d]=b.dataset.mv.split(':').map(Number),a=db.servidores;[a[i],a[i+d]]=[a[i+d],a[i]];persist();renderCfg()}
+  if(b.dataset.rm&&await confirmar('Remover o servidor '+b.dataset.rm+'? Ele não tem clientes.',{ok:'Remover'})){db.servidores=db.servidores.filter(x=>x!==b.dataset.rm);logar('configuração','Servidor removido: '+b.dataset.rm);persist();renderCfg()}};
+$('csrvs').onchange=e=>{const s=e.target.dataset.ab;if(!s)return;db.abrev[s]=e.target.value.toUpperCase().trim();persist()};
+$('addsrv').onclick=()=>{const n=$('nsrv').value.trim();if(!n)return toast('Digite o nome do servidor.');
+  if(servers().some(s=>s.toLowerCase()===n.toLowerCase()))return toast('Esse servidor já existe.');
+  db.servidores.push(n);db.abrev[n]=($('nabr').value.trim()||n.slice(0,3)).toUpperCase();$('nsrv').value='';$('nabr').value='';logar('configuração','Servidor adicionado: '+n);persist();renderCfg();toast('Servidor adicionado: '+n)};
 
 /* ===== SELETORES MODERNOS ===== */
 (function(){
@@ -1035,6 +1229,38 @@ go('home');
     atualiza();draw()}
   $('hist').addEventListener('click',reabre);$('recent').addEventListener('click',reabre);
   atualiza();
+})();
+</script>
+<script id="painel-creditos">
+/* Painel de créditos por servidor (tela inicial). Usa os mesmos dados do Financeiro > Estoque de créditos.
+   Para desativar: apague este bloco, o <div id="cgrid"> e o bloco <style id="polish-v3"> da parte do painel. */
+(function(){
+  var FIXOS=[['Black','black'],['Lexus','lexus'],['Fast','fast'],['Clube','clube']];
+  function nomeReal(n){var l=servers().find(function(x){return String(x).toLowerCase()===n.toLowerCase()});return l||n}
+  function saldo(s){
+    var cs=db.cred.filter(function(c){return c.servidor===s});
+    if(!cs.length)return null;
+    var cp=cs.reduce(function(a,c){return a+c.qtd},0),u=usados(s,null)||0;
+    return {cp:cp,u:u,sd:cp-u};
+  }
+  function card(nome,cls){
+    var k=saldo(nome),n=esc(nome),low=k&&k.sd<=5;
+    if(!k)return '<div class="sc '+cls+'" role="button" tabindex="0" data-fin="1"><div class="sn"><span>'+n+'</span></div><b class="sb">—</b><span class="sl">sem créditos registrados</span><div class="st"><i style="width:0"></i></div><div class="sm"><span>Registre no Financeiro</span></div></div>';
+    var pct=k.cp>0?Math.max(0,Math.min(100,k.sd/k.cp*100)):0;
+    return '<div class="sc '+cls+(low?' low':'')+'" role="button" tabindex="0" data-fin="1"><div class="sn"><span>'+n+'</span>'+(low?'<span class="tag">'+(k.sd<=0?'esgotado':'baixo')+'</span>':'')+'</div><b class="sb">'+k.sd+'</b><span class="sl">'+(Math.abs(k.sd)===1?'crédito disponível':'créditos disponíveis')+'</span><div class="st"><i style="width:'+pct.toFixed(1)+'%"></i></div><div class="sm"><span>Comprados '+k.cp+'</span><span>Usados '+k.u+'</span></div></div>';
+  }
+  function renderCreds(){
+    var g=document.getElementById('cgrid');if(!g)return;
+    var usadosN={},html='';
+    FIXOS.forEach(function(f){var nome=nomeReal(f[0]);usadosN[nome.toLowerCase()]=1;html+=card(nome,f[1])});
+    servers().forEach(function(s){if(!usadosN[String(s).toLowerCase()])html+=card(s,'outro')});
+    g.innerHTML=html;
+  }
+  var _rh=renderHome;
+  renderHome=function(){var r=_rh.apply(this,arguments);try{renderCreds()}catch(e){}return r};
+  var go2=function(e){var t=e.target.closest&&e.target.closest('[data-fin],#cpgo');if(!t)return;if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();go('fin')};
+  var panel=document.getElementById('v-home');panel.addEventListener('click',go2);panel.addEventListener('keydown',go2);
+  try{renderCreds()}catch(e){}
 })();
 </script>
 </body>
