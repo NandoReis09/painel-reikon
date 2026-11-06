@@ -292,11 +292,26 @@ dialog h2{font-size:18px}
 }
 @media(prefers-reduced-motion:reduce){.sc,.sc:hover{transition:none;transform:none}}
 </style>
+<style id="ajustes-v27">
+/* barra inferior: 5 botões iguais, centralizada, sem estourar o texto */
+@media(max-width:900px){
+#bnav{left:50%;right:auto;transform:translateX(-50%);width:min(460px,calc(100% - 20px));justify-content:space-between;align-items:stretch;gap:2px;padding:6px}
+#bnav button{flex:1 1 0;min-width:0;padding:7px 0;gap:2px;font-size:10.5px;line-height:1.1;justify-content:center}
+#bnav button span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bnav button svg{width:21px;height:21px}
+}
+/* glass mais transparente */
+#bnav{background:linear-gradient(180deg,rgba(60,46,48,.3),rgba(22,15,16,.34));-webkit-backdrop-filter:blur(22px) saturate(2);backdrop-filter:blur(22px) saturate(2);border:1px solid rgba(255,255,255,.2)}
+#bnav button.on{background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.07))}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.38));-webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);border:1px solid rgba(255,255,255,.6)}
+button.s,.tb,.chip,.lb{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2))}
+dialog{background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.62));-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7)}
+</style>
 </head>
 <body>
 <div id="top"><button id="hamb" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><img id="topimg" alt="Reikon"><span id="toptitle"></span></div>
 <div id="scrim"></div>
-<nav id="bnav"><button data-go="rec"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg><span>Comprovantes</span></button><button data-go="cob"><svg viewBox="0 0 24 24"><path d="M17 11a3 3 0 100-6M21.5 19c-.4-2.4-1.8-4-4-4.6M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/></svg><span>Cobranças</span></button><button data-go="per"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg><span>Período</span></button><button id="bmenu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button></nav>
+<nav id="bnav"><button data-go="rec"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg><span>Comprovantes</span></button><button data-go="cob"><svg viewBox="0 0 24 24"><path d="M17 11a3 3 0 100-6M21.5 19c-.4-2.4-1.8-4-4-4.6M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/></svg><span>Cobranças</span></button><button data-go="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Início</span></button><button data-go="per"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg><span>Período</span></button><button id="bmenu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button></nav>
 <div class="app">
 <aside>
 <img id="wm" alt="Reikon">
@@ -306,6 +321,7 @@ dialog h2{font-size:18px}
 <button class="nv" data-go="cob"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M17 11a3 3 0 100-6M21.5 19c-.4-2.4-1.8-4-4-4.6"/></svg>Cobranças</button>
 <div class="ng">Gestão</div><button class="nv" data-go="per"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>Período</button>
 <button class="nv" data-go="fin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.4.7-2.4 1.8 0 2.6 5 1.2 5 3.9 0 1.1-1.1 1.9-2.6 1.9-1.2 0-2.2-.5-2.7-1.4M12 6.5V8M12 16v1.5"/></svg>Financeiro</button>
+<button class="nv" data-go="saldo"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 15h2"/></svg>Saldos</button>
 <div class="ng">Sistema</div><button class="nv" data-go="seg"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Segurança</button>
 <button class="nv" data-go="bkp"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3"/></svg>Backup</button>
 <button class="nv" data-go="cfg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Configurações</button>
@@ -341,6 +357,7 @@ dialog h2{font-size:18px}
 <label>Nome do cliente</label><input id="name">
 <div class="r"><div><label>Valor do plano (R$)</label><input id="val" inputmode="decimal" placeholder="30,00"></div><div><label>Data do pagamento</label><input id="paid" inputmode="numeric" placeholder="30/10/2026"></div></div>
 <div class="r"><div><label>Desconto (R$) — opcional</label><input id="disc" inputmode="decimal" placeholder="0,00"></div><div><label>Total a pagar (plano − desconto)</label><input id="orig" readonly tabindex="-1" placeholder="—"></div></div>
+<div id="sdnote" class="ucli" hidden></div>
 <div class="r"><div><label>Plano</label><input id="plan" list="plans" placeholder="Mensal"><datalist id="plans"></datalist></div><div><label>Servidor</label><select id="srv"><option></option><option>Lexus</option><option>Black</option><option>Fast</option><option>Clube</option></select></div></div>
 <label>Nº do comprovante (avança sozinho)</label><input id="num" inputmode="numeric" style="max-width:160px">
 <label class="chk"><input type="checkbox" id="ctipo"> Renovação de confiança (não gasta crédito)</label>
@@ -396,6 +413,14 @@ dialog h2{font-size:18px}
 <div class="g21"><div class="card"><h2>Lucro por servidor</h2><div style="overflow-x:auto" id="flucro"></div></div><div class="card"><h2>Comparação</h2><div id="fcomp"></div></div></div>
 <div class="g21"><div class="card"><h2>Estoque de créditos</h2><div style="overflow-x:auto" id="fest"></div></div><div class="card" id="fprevc"><h2>Previsão do mês</h2><div id="fprev"></div></div></div>
 <div class="card"><h2>Movimentações do mês</h2><div class="hl" id="fmov"></div></div>
+</section>
+
+<section id="v-saldo" hidden>
+<h1>Saldos</h1><p class="sub">Crédito de desconto por indicação. Ao fazer o comprovante de um cliente com saldo, o painel avisa e desconta o valor que você colocar.</p>
+<div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="card stat hi"><span>Total em saldos</span><b id="stot">R$ 0,00</b></div><div class="card stat"><span>Clientes com saldo</span><b id="scnt">0</b></div></div>
+<div class="card"><div class="bar" style="margin:0 0 12px"><button class="p" id="sadd">Adicionar cliente</button></div>
+<input id="sq" placeholder="Buscar por nome ou usuário" style="margin-bottom:8px">
+<div class="hl" id="slist" style="max-height:none"></div></div>
 </section>
 
 <section id="v-seg" hidden>
@@ -486,11 +511,23 @@ dialog h2{font-size:18px}
 <label>Nome para o painel de IPTV</label><div class="bar" style="margin:0"><input id="cnm" readonly><button class="s" id="cnmb" type="button">Copiar</button></div>
 <p class="note sh" id="cwarn"></p>
 <div class="bar"><button class="p" id="csave">Salvar</button><button class="s" id="cdel">Excluir</button><button class="s" id="ccancel">Cancelar</button></div></dialog>
+<dialog id="sdlg"><h2 id="sdtitle">Adicionar cliente</h2>
+<label>Cliente (da lista de Cobranças)</label><select id="sdcli"></select>
+<div id="sdinirow"><label>Saldo (R$)</label><input id="sdini" inputmode="decimal" placeholder="0,00"></div>
+<div class="bar"><button class="p" id="sdsave">Salvar</button><button class="s" id="sddel" hidden>Excluir</button><button class="s" id="sdno">Cancelar</button></div></dialog>
+<dialog id="sadlg"><h2>Saldo · <span id="sawho"></span></h2>
+<p class="note" id="sacur" style="margin:0 0 8px"></p>
+<div class="r"><div><label>Tipo</label><select id="satipo"><option value="cred">Adicionar (indicação)</option><option value="ret">Retirar (correção)</option></select></div><div><label>Valor (R$)</label><input id="saval" inputmode="decimal" placeholder="10,00"></div></div>
+<label>Observação</label><input id="saobs" placeholder="Ex.: indicou o João">
+<div class="bar"><button class="p" id="sasave">Salvar</button><button class="s" id="sano">Cancelar</button></div></dialog>
+<dialog id="shdlg"><h2>Histórico · <span id="shwho"></span></h2>
+<div class="hl" id="shlist" style="max-height:340px"></div>
+<div class="bar"><button class="s" id="shno">Fechar</button></div></dialog>
 <dialog id="qdlg"><p id="qmsg" style="white-space:pre-wrap;margin:0 0 12px"></p><input id="qin" hidden><div class="bar"><button class="p" id="qok">OK</button><button class="s" id="qno">Cancelar</button></div></dialog>
 <div id="lock" hidden><div class="lk"><img id="lkimg" alt=""><h2 style="margin:0">Painel bloqueado</h2><input id="lkin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"><button class="p" id="lkok">Entrar</button><p id="lkmsg"></p><small>Esqueceu o PIN? Limpe os dados do site no navegador e restaure o backup ou sincronize pelo GitHub.</small></div></div>
 <div id="toast" popover="manual"></div>
 <script>
-const APP_VER='2.5',KEY='reikon_db',VER=8;
+const APP_VER='2.7',KEY='reikon_db',VER=8;
 const DEF_TPL='Olá, {primeiro_nome}! 👋\n\nPassando para lembrar que o seu acesso da Reikon TV vence em {vencimento}.\n\nUsuário: {usuario}\nPlano: {plano}\nValor: {valor}\n\nPara renovar, é só enviar o pix e me avisar por aqui. Obrigado!';
 const $=id=>document.getElementById(id);
 function toast(m,act){const t=$('toast');t.textContent=m;if(act){const b=document.createElement('button');b.className='tbtn';b.textContent=act.label;b.onclick=()=>{act.fn();try{t.hidePopover()}catch(e){}};t.append(b)}
@@ -509,7 +546,7 @@ function ld(k,src){return new Promise(r=>{const i=new Image();i.onload=()=>{IMG[
 
 /* ===== DADOS: separados do código; versionados para atualizações ===== */
 function migrate(d){
-  d.receipts=d.receipts||[];d.plans=d.plans||[];d.lastBackup=d.lastBackup||0;d.clients=d.clients||[];d.template=d.template||DEF_TPL;if(!d.templates||!d.templates.length)d.templates=[{id:'t1',nome:'Padrão',quando:'',texto:d.template}];d.novos=d.novos||[];d.servidores=(d.servidores&&d.servidores.length)?d.servidores:['Lexus','Black','Fast','Clube'];d.clients.forEach(c=>{if(c.servidor&&!d.servidores.includes(c.servidor))d.servidores.push(c.servidor)});d.lixo=(d.lixo||[]).filter(x=>Date.now()-x.at<30*864e5);d.log=d.log||[];d.cred=d.cred||[];d.desp=d.desp||[];d.opt=Object.assign({auto:true,modelo:'premium'},d.opt||{});d.nomeFmt=d.nomeFmt||'{nome} │ {abrev}{valor} │ ID: {usuario}';d.abrev=Object.assign({Black:'BLK',Lexus:'LXS',Fast:'FST',Clube:'CLB'},d.abrev||{});d.ord=d.ord||'venc';d.hord=d.hord||'recente';d.fmt=Object.assign({data:'br',valor:'rs',nome:'normal'},d.fmt||{});
+  d.receipts=d.receipts||[];d.saldos=d.saldos||[];d.plans=d.plans||[];d.lastBackup=d.lastBackup||0;d.clients=d.clients||[];d.template=d.template||DEF_TPL;if(!d.templates||!d.templates.length)d.templates=[{id:'t1',nome:'Padrão',quando:'',texto:d.template}];d.novos=d.novos||[];d.servidores=(d.servidores&&d.servidores.length)?d.servidores:['Lexus','Black','Fast','Clube'];d.clients.forEach(c=>{if(c.servidor&&!d.servidores.includes(c.servidor))d.servidores.push(c.servidor)});d.lixo=(d.lixo||[]).filter(x=>Date.now()-x.at<30*864e5);d.log=d.log||[];d.cred=d.cred||[];d.desp=d.desp||[];d.opt=Object.assign({auto:true,modelo:'premium'},d.opt||{});d.nomeFmt=d.nomeFmt||'{nome} │ {abrev}{valor} │ ID: {usuario}';d.abrev=Object.assign({Black:'BLK',Lexus:'LXS',Fast:'FST',Clube:'CLB'},d.abrev||{});d.ord=d.ord||'venc';d.hord=d.hord||'recente';d.fmt=Object.assign({data:'br',valor:'rs',nome:'normal'},d.fmt||{});
   /* futuras versões: if(d.v<2){ ...ajustes...; d.v=2 } */
   d.v=VER;return d}
 function load(){
@@ -524,8 +561,8 @@ try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}ca
 persist();
 
 /* ===== NAVEGAÇÃO ===== */
-const views=['home','rec','cob','per','fin','seg','bkp','cfg'];
-const TITLES={home:'Visão geral',rec:'Comprovantes',cob:'Cobranças',per:'Período',fin:'Financeiro',seg:'Segurança',bkp:'Backup',cfg:'Configurações'};
+const views=['home','rec','cob','per','fin','saldo','seg','bkp','cfg'];
+const TITLES={home:'Visão geral',rec:'Comprovantes',cob:'Cobranças',per:'Período',fin:'Financeiro',saldo:'Saldos',seg:'Segurança',bkp:'Backup',cfg:'Configurações'};
 function go(v){views.forEach(x=>{$('v-'+x).hidden=x!==v;const b=document.querySelector(`.nv[data-go="${x}"]`);b&&b.classList.toggle('on',x===v)});document.querySelectorAll('#bnav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===v));document.body.classList.remove('menu');
   if(v==='home')renderHome();if(v==='rec'){$('modelo').value=db.opt.modelo||'premium';draw();$('autorn').checked=db.opt.auto}if(v==='bkp')renderBkp();if(v==='cob')renderCob();if(v==='per')renderPer();if(v==='fin')renderFin();if(v==='seg')renderSeg();if(v==='cfg')renderCfg();$('toptitle').textContent=TITLES[v]||'';scrollTo(0,0)}
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
@@ -1261,6 +1298,194 @@ go('home');
   var go2=function(e){var t=e.target.closest&&e.target.closest('[data-fin],#cpgo');if(!t)return;if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();go('fin')};
   var panel=document.getElementById('v-home');panel.addEventListener('click',go2);panel.addEventListener('keydown',go2);
   try{renderCreds()}catch(e){}
+})();
+</script>
+<script id="painel-saldos">
+/* Saldos de indicação (crédito de desconto por cliente).
+   Dados em db.saldos = [{id,nome,usuario,mov:[{id,t,tipo:'cred'|'ret'|'uso',v,obs,num}]}]. O saldo é a soma de mov.
+   Para desativar: apague este bloco, a view v-saldo, os diálogos sdlg/sadlg/shdlg, o div sdnote e o botão do menu. */
+(function(){
+  var P=function(v){var n=parseFloat(String(v==null?'':v).replace(/\./g,'').replace(',','.'));return isNaN(n)?null:n};
+  var BRL=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
+  var FMT=function(n){return n.toFixed(2).replace('.',',')};
+  var r2=function(n){return Math.round(n*100)/100};
+  var uid=function(p){return p+Date.now()+Math.random().toString(36).slice(2,6)};
+  function S(){db.saldos=db.saldos||[];return db.saldos}
+  function norm(s){return String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+  function porId(id){return S().find(function(c){return c.id===id})}
+
+  /* saldo = soma dos movimentos; descontos de comprovantes apagados deixam de contar */
+  function bal(c,semNum){
+    var ex={};db.receipts.forEach(function(h){ex[h.num]=1});
+    return r2((c.mov||[]).reduce(function(a,m){
+      if(m.tipo==='uso'&&(!ex[m.num]||(semNum!=null&&m.num==semNum)))return a;
+      return a+m.v},0))}
+
+  /* acha o cliente de saldo de um comprovante: pelo usuário (e nome, se compartilhado) ou só pelo nome */
+  function achar(user,name){
+    var u=String(user||'').trim(),n=norm(name),l=S(),a;
+    if(u){a=l.filter(function(c){return c.usuario&&c.usuario.trim()===u});
+      if(a.length===1)return a[0];
+      if(a.length>1){var b=a.filter(function(c){return norm(c.nome)===n});return b[0]||null}}
+    if(n){return l.find(function(c){return norm(c.nome)===n})||null}
+    return null}
+
+  /* ---------- tela Saldos ---------- */
+  function renderS(){
+    var box=$('slist');if(!box)return;
+    var q=norm($('sq').value),all=S(),tot=0,cnt=0;
+    all.forEach(function(c){var b=bal(c);if(b>0){tot+=b;cnt++}});
+    $('stot').textContent=BRL(r2(tot));$('scnt').textContent=cnt;
+    var l=all.filter(function(c){return !q||norm(c.nome).indexOf(q)>=0||norm(c.usuario).indexOf(q)>=0})
+      .sort(function(a,b){return norm(a.nome).localeCompare(norm(b.nome),'pt')});
+    box.innerHTML=l.length?l.map(function(c){var b=bal(c);
+      return '<div class="h"><span><b>'+esc(c.nome)+'</b>'+(c.usuario?' · '+esc(c.usuario):'')+'<br><small>Saldo: <b'+(b>0?'':' style="opacity:.55"')+'>'+BRL(b)+'</b></small></span>'+
+        '<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="s" data-sa="add" data-id="'+c.id+'">Saldo</button><button class="s" data-sa="hist" data-id="'+c.id+'">Histórico</button><button class="s" data-sa="ed" data-id="'+c.id+'">Editar</button></span></div>'}).join('')
+      :'<p class="note">'+(all.length?'Nenhum cliente encontrado.':'Nenhum cliente na lista. Toque em “Adicionar cliente”.')+'</p>'}
+  $('sq').oninput=renderS;
+
+  /* ---------- adicionar / editar cliente ---------- */
+  var sEdit=null;
+  function opLabel(x){return esc(x.nome)+(x.usuario?' · '+esc(x.usuario):'')+(x.servidor?' · '+esc(x.servidor):'')}
+  function abreCli(c){
+    sEdit=c||null;
+    var usados={};S().forEach(function(s){if(s!==c){usados[s.cid||'']=1;usados[norm(s.nome)+'|'+(s.usuario||'').trim()]=1}});
+    var l=db.clients.filter(function(x){return x.nome&&!usados[x.id]&&!usados[norm(x.nome)+'|'+(x.usuario||'').trim()]})
+      .sort(function(a,b){return norm(a.nome).localeCompare(norm(b.nome),'pt')});
+    var match=c?db.clients.find(function(x){return x.id===c.cid||(norm(x.nome)===norm(c.nome)&&(x.usuario||'').trim()===(c.usuario||'').trim())}):null;
+    if(!c&&!l.length)return toast(db.clients.length?'Todos os clientes das Cobranças já estão nos saldos.':'Não há clientes cadastrados em Cobranças.');
+    var h='<option value="">Escolher cliente…</option>';
+    if(c&&!match)h+='<option value="__cur" selected>'+opLabel(c)+'</option>';
+    h+=l.map(function(x){return '<option value="'+esc(x.id)+'"'+(match&&match.id===x.id?' selected':'')+'>'+opLabel(x)+'</option>'}).join('');
+    $('sdcli').innerHTML=h;
+    $('sdtitle').textContent=c?'Editar cliente':'Adicionar cliente';
+    $('sdini').value='';$('sdinirow').hidden=!!c;$('sddel').hidden=!c;
+    $('sdlg').showModal()}
+  $('sadd').onclick=function(){abreCli(null)};
+  $('sdno').onclick=function(){$('sdlg').close()};
+  $('sdsave').onclick=function(){
+    var v=$('sdcli').value;if(!v)return toast('Escolha o cliente.');
+    var nome,usu,cid;
+    if(v==='__cur'){nome=sEdit.nome;usu=sEdit.usuario||'';cid=sEdit.cid||''}
+    else{var x=db.clients.find(function(z){return z.id===v});if(!x)return toast('Cliente não encontrado.');nome=x.nome;usu=(x.usuario||'').trim();cid=x.id}
+    var dup=S().find(function(c){return c!==sEdit&&((cid&&c.cid===cid)||(norm(c.nome)===norm(nome)&&(c.usuario||'').trim()===usu))});
+    if(dup)return toast('Esse cliente já está na lista de saldos.');
+    if(sEdit){sEdit.nome=nome;sEdit.usuario=usu;sEdit.cid=cid;logar('saldo','Cliente de saldo editado: '+nome)}
+    else{var ini=P($('sdini').value),c={id:uid('s'),cid:cid,nome:nome,usuario:usu,mov:[]};
+      if(ini!=null&&ini>0)c.mov.push({id:uid('m'),t:Date.now(),tipo:'cred',v:r2(ini),obs:'Saldo inicial'});
+      S().push(c);logar('saldo','Cliente adicionado aos saldos: '+nome)}
+    persist();$('sdlg').close();renderS();nota()};
+  $('sddel').onclick=async function(){
+    if(!sEdit)return;
+    var b=bal(sEdit);
+    if(!await confirmar('Excluir '+sEdit.nome+' dos saldos?\n'+(b>0?'Ele tem '+BRL(b)+' de saldo, que será perdido, junto com o histórico.':'O histórico dele também será apagado.'),{ok:'Excluir'}))return;
+    logar('saldo','Cliente removido dos saldos: '+sEdit.nome+' (saldo '+BRL(b)+')');
+    db.saldos=S().filter(function(c){return c!==sEdit});sEdit=null;
+    persist();$('sdlg').close();renderS();nota()};
+
+  /* ---------- adicionar / retirar saldo ---------- */
+  var sCur=null;
+  function abreSaldo(c){sCur=c;$('sawho').textContent=c.nome;$('sacur').textContent='Saldo atual: '+BRL(bal(c));
+    $('satipo').value='cred';$('saval').value='';$('saobs').value='';$('sadlg').showModal();setTimeout(function(){$('saval').focus()},60)}
+  $('sano').onclick=function(){$('sadlg').close()};
+  $('sasave').onclick=function(){
+    if(!sCur)return;
+    var v=P($('saval').value);
+    if(v==null||v<=0)return toast('Digite um valor maior que zero.');
+    v=r2(v);var ret=$('satipo').value==='ret';
+    if(ret&&v>bal(sCur))return toast('A retirada é maior que o saldo atual ('+BRL(bal(sCur))+').');
+    sCur.mov=sCur.mov||[];
+    sCur.mov.push({id:uid('m'),t:Date.now(),tipo:ret?'ret':'cred',v:ret?-v:v,obs:$('saobs').value.trim()});
+    logar('saldo',(ret?'Saldo retirado: ':'Saldo adicionado: ')+BRL(v)+' · '+sCur.nome+($('saobs').value.trim()?' · '+$('saobs').value.trim():''));
+    persist();$('sadlg').close();renderS();nota()};
+
+  /* ---------- histórico ---------- */
+  var hCur=null;
+  function renderHistS(){
+    var c=hCur;if(!c)return;
+    var ex={};db.receipts.forEach(function(h){ex[h.num]=1});
+    var l=(c.mov||[]).filter(function(m){return m.tipo!=='uso'||ex[m.num]}).slice().sort(function(a,b){return b.t-a.t});
+    $('shlist').innerHTML=(l.length?l.map(function(m){
+      var rot=m.tipo==='uso'?'Desconto no comprovante nº '+pad(m.num):(m.tipo==='ret'?'Retirada':(m.obs==='Saldo inicial'?'Saldo inicial':'Crédito'));
+      var obs=m.tipo==='uso'?'':(m.obs&&m.obs!=='Saldo inicial'?' · '+esc(m.obs):'');
+      return '<div class="h"><span>'+esc(rot)+obs+'<br><small>'+new Date(m.t).toLocaleDateString('pt-BR')+'</small></span><span><b'+(m.v<0?' class="neg"':'')+'>'+(m.v<0?'− ':'+ ')+BRL(Math.abs(m.v))+'</b>'+(m.tipo==='uso'?'':' <button class="s" data-hx="'+m.id+'">Apagar</button>')+'</span></div>'}).join('')
+      :'<p class="note">Sem movimentos ainda.</p>')+'<div class="h"><span><b>Saldo atual</b></span><span><b>'+BRL(bal(c))+'</b></span></div>'}
+  $('shlist').onclick=async function(e){
+    var b=e.target.closest('[data-hx]');if(!b||!hCur)return;
+    var m=(hCur.mov||[]).find(function(x){return x.id===b.dataset.hx});if(!m)return;
+    if(m.v>0&&bal(hCur)-m.v<0)return toast('Não dá para apagar: o saldo ficaria negativo (parte já foi usada).');
+    if(!await confirmar('Apagar este movimento de '+BRL(Math.abs(m.v))+'?',{ok:'Apagar'}))return;
+    hCur.mov=hCur.mov.filter(function(x){return x!==m});
+    logar('saldo','Movimento de saldo apagado: '+BRL(m.v)+' · '+hCur.nome);
+    persist();renderHistS();renderS();nota()};
+  $('shno').onclick=function(){$('shdlg').close()};
+
+  $('slist').onclick=function(e){
+    var b=e.target.closest('[data-sa]');if(!b)return;
+    var c=porId(b.dataset.id);if(!c)return;
+    if(b.dataset.sa==='add')abreSaldo(c);
+    else if(b.dataset.sa==='ed')abreCli(c);
+    else{hCur=c;$('shwho').textContent=c.nome;renderHistS();$('shdlg').showModal()}};
+
+  /* ---------- aviso na tela de comprovantes ---------- */
+  var lastHtml=null;
+  function nota(){
+    var box=$('sdnote');if(!box)return;
+    var html='';
+    try{
+      if(!$('ctipo').checked){
+        var c=achar($('user').value,$('name').value);
+        if(c){
+          var num=data().num,av=bal(c,num),ds=P($('disc').value)||0;
+          var aplicado=(c.mov||[]).some(function(m){return m.tipo==='uso'&&m.num==num&&db.receipts.some(function(h){return h.num==num})});
+          if(av>0||aplicado){
+            var msg='<b>'+esc(c.nome)+'</b> tem <b>'+BRL(av)+'</b> de saldo de indicação.';
+            if(ds>av)msg+=' <span style="color:#c40000">O desconto é maior que o saldo; só '+BRL(av)+' serão descontados do saldo.</span>';
+            else if(ds>0)msg+=' Este desconto usa '+BRL(ds)+' e deixa '+BRL(r2(av-ds))+'.';
+            else msg+=' Preencha o desconto acima para usar.';
+            if(av>0&&Math.abs(ds-Math.min(av,P($('val').value)||av))>0.001)msg+=' <button class="chip" type="button" id="sduse">Usar tudo</button>';
+            html=msg}}}
+    }catch(e){html=''}
+    if(html===lastHtml)return;
+    lastHtml=html;box.hidden=!html;box.innerHTML=html}
+  $('sdnote').addEventListener('click',function(e){
+    if(!e.target.closest('#sduse'))return;
+    var c=achar($('user').value,$('name').value);if(!c)return;
+    var av=bal(c,data().num),pl=P($('val').value),x=pl!=null&&pl>0?Math.min(av,pl):av;
+    $('disc').value=FMT(x);$('disc').dispatchEvent(new Event('input',{bubbles:true}));nota()});
+  ['user','name','disc','val'].forEach(function(i){$(i).addEventListener('input',nota)});
+  $('ctipo').addEventListener('change',nota);
+  setInterval(function(){if(!$('v-rec').hidden)nota()},700);
+
+  /* ---------- desconta do saldo ao gerar o comprovante (uma vez por nº; reemitir só ajusta) ---------- */
+  function aplica(){
+    var num=emitted&&emitted.num;if(num==null)return;
+    var rec=db.receipts.find(function(h){return h.num==num});if(!rec)return;
+    var ds=rec.tipo==='confianca'?0:(P(rec.desc)||0),c=ds>0?achar(rec.user,rec.name):null,mudou=false;
+    S().forEach(function(x){
+      if(x===c)return;var n0=(x.mov||[]).length;
+      x.mov=(x.mov||[]).filter(function(m){return !(m.tipo==='uso'&&m.num==num)});
+      if(x.mov.length!==n0)mudou=true});
+    if(c){
+      c.mov=c.mov||[];
+      var av=bal(c,num),usa=r2(Math.min(ds,Math.max(av,0))),ex=c.mov.find(function(m){return m.tipo==='uso'&&m.num==num});
+      if(usa>0){
+        if(ex){if(ex.v!==-usa){ex.v=-usa;mudou=true}}
+        else{c.mov.push({id:uid('m'),t:Date.now(),tipo:'uso',v:-usa,num:num,obs:'Comprovante nº '+pad(num)});mudou=true;
+          logar('saldo','Desconto de '+BRL(usa)+' do saldo de '+c.nome+' (comprovante nº '+pad(num)+')')}
+        if(ds>usa)toast('O desconto é maior que o saldo de '+c.nome+'. Descontei só '+BRL(usa)+' do saldo.')}
+      else if(ex){c.mov=c.mov.filter(function(m){return m!==ex});mudou=true}}
+    if(mudou){persist();renderS()}
+    lastHtml=null;nota()}
+  var _save=save;
+  save=function(){var ok=_save.apply(this,arguments);if(ok){try{aplica()}catch(e){console.error(e)}}return ok};
+
+  /* ---------- ganchos de navegação e limpeza ---------- */
+  var _go=go;
+  go=function(v){var r=_go.apply(this,arguments);if(v==='saldo')renderS();if(v==='rec'){lastHtml=null;nota()}return r};
+  var _cf=clearForm;
+  clearForm=function(){var r=_cf.apply(this,arguments);lastHtml=null;nota();return r};
+  renderS();
 })();
 </script>
 </body>
