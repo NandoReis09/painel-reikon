@@ -1300,10 +1300,8 @@ go('home');
   try{renderCreds()}catch(e){}
 })();
 </script>
+
 <script id="painel-saldos">
-/* Saldos de indicação (crédito de desconto por cliente).
-   Dados em db.saldos = [{id,nome,usuario,mov:[{id,t,tipo:'cred'|'ret'|'uso',v,obs,num}]}]. O saldo é a soma de mov.
-   Para desativar: apague este bloco, a view v-saldo, os diálogos sdlg/sadlg/shdlg, o div sdnote e o botão do menu. */
 (function(){
   var P=function(v){var n=parseFloat(String(v==null?'':v).replace(/\./g,'').replace(',','.'));return isNaN(n)?null:n};
   var BRL=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
@@ -1314,14 +1312,12 @@ go('home');
   function norm(s){return String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
   function porId(id){return S().find(function(c){return c.id===id})}
 
-  /* saldo = soma dos movimentos; descontos de comprovantes apagados deixam de contar */
   function bal(c,semNum){
     var ex={};db.receipts.forEach(function(h){ex[h.num]=1});
     return r2((c.mov||[]).reduce(function(a,m){
       if(m.tipo==='uso'&&(!ex[m.num]||(semNum!=null&&m.num==semNum)))return a;
       return a+m.v},0))}
 
-  /* acha o cliente de saldo de um comprovante: pelo usuário (e nome, se compartilhado) ou só pelo nome */
   function achar(user,name){
     var u=String(user||'').trim(),n=norm(name),l=S(),a;
     if(u){a=l.filter(function(c){return c.usuario&&c.usuario.trim()===u});
@@ -1330,7 +1326,7 @@ go('home');
     if(n){return l.find(function(c){return norm(c.nome)===n})||null}
     return null}
 
-  /* ---------- tela Saldos ---------- */
+  /* ---- tela Saldos ---- */
   function renderS(){
     var box=$('slist');if(!box)return;
     var q=norm($('sq').value),all=S(),tot=0,cnt=0;
@@ -1339,85 +1335,134 @@ go('home');
     var l=all.filter(function(c){return !q||norm(c.nome).indexOf(q)>=0||norm(c.usuario).indexOf(q)>=0})
       .sort(function(a,b){return norm(a.nome).localeCompare(norm(b.nome),'pt')});
     box.innerHTML=l.length?l.map(function(c){var b=bal(c);
-      return '<div class="h"><span><b>'+esc(c.nome)+'</b>'+(c.usuario?' · '+esc(c.usuario):'')+'<br><small>Saldo: <b'+(b>0?'':' style="opacity:.55"')+'>'+BRL(b)+'</b></small></span>'+
-        '<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="s" data-sa="add" data-id="'+c.id+'">Saldo</button><button class="s" data-sa="hist" data-id="'+c.id+'">Histórico</button><button class="s" data-sa="ed" data-id="'+c.id+'">Editar</button></span></div>'}).join('')
-      :'<p class="note">'+(all.length?'Nenhum cliente encontrado.':'Nenhum cliente na lista. Toque em “Adicionar cliente”.')+'</p>'}
+      return '<div class="h"><span><b>'+esc(c.nome)+'</b>'+(c.usuario?' &middot; '+esc(c.usuario):'')+'<br><small>Saldo: <b'+(b>0?'':' style="opacity:.55"')+'>'+BRL(b)+'</b></small></span>'+
+        '<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="s" data-sa="add" data-id="'+c.id+'">Saldo</button><button class="s" data-sa="hist" data-id="'+c.id+'">Hist&oacute;rico</button><button class="s" data-sa="ed" data-id="'+c.id+'">Editar</button></span></div>'}).join('')
+      :'<p class="note">'+(all.length?'Nenhum cliente encontrado.':'Nenhum cliente. Toque em "Adicionar cliente".')+'</p>'}
   $('sq').oninput=renderS;
 
-  /* ---------- adicionar / editar cliente ---------- */
+  /* ---- diálogo adicionar/editar cliente ---- */
   var sEdit=null;
-  function opLabel(x){return esc(x.nome)+(x.usuario?' · '+esc(x.usuario):'')+(x.servidor?' · '+esc(x.servidor):'')}
+  function opLabel(x){
+    var t=x.nome;
+    if(x.usuario)t+=' \u00b7 '+x.usuario;
+    if(x.servidor)t+=' \u00b7 '+x.servidor;
+    return esc(t)}
+
   function abreCli(c){
     sEdit=c||null;
-    var usados={};S().forEach(function(s){if(s!==c){usados[s.cid||'']=1;usados[norm(s.nome)+'|'+(s.usuario||'').trim()]=1}});
-    var l=db.clients.filter(function(x){return x.nome&&!usados[x.id]&&!usados[norm(x.nome)+'|'+(x.usuario||'').trim()]})
-      .sort(function(a,b){return norm(a.nome).localeCompare(norm(b.nome),'pt')});
-    var match=c?db.clients.find(function(x){return x.id===c.cid||(norm(x.nome)===norm(c.nome)&&(x.usuario||'').trim()===(c.usuario||'').trim())}):null;
-    if(!c&&!l.length)return toast(db.clients.length?'Todos os clientes das Cobranças já estão nos saldos.':'Não há clientes cadastrados em Cobranças.');
-    var h='<option value="">Escolher cliente…</option>';
-    if(c&&!match)h+='<option value="__cur" selected>'+opLabel(c)+'</option>';
-    h+=l.map(function(x){return '<option value="'+esc(x.id)+'"'+(match&&match.id===x.id?' selected':'')+'>'+opLabel(x)+'</option>'}).join('');
+    // ids e chaves nome|usuario já nos saldos (exceto o que está sendo editado)
+    var usadoIds={},usadoKeys={};
+    S().forEach(function(s){
+      if(s===c)return;
+      if(s.cid)usadoIds[s.cid]=1;
+      usadoKeys[norm(s.nome)+'|'+(s.usuario||'').trim()]=1;
+    });
+    // cliente sendo editado no select (pode ter vindo sem cid)
+    var match=null;
+    if(c){
+      match=(db.clients||[]).find(function(x){
+        return (c.cid&&x.id===c.cid)||(norm(x.nome)===norm(c.nome)&&(x.usuario||'').trim()===(c.usuario||'').trim());
+      });
+    }
+    // lista: todos os clientes exceto os que já têm saldo em outro registro
+    var todos=(db.clients||[]).slice().sort(function(a,b){return norm(a.nome||'').localeCompare(norm(b.nome||''),'pt')});
+    var disponiveis=todos.filter(function(x){
+      if(!x.nome)return false;
+      if(match&&x.id===match.id)return false; // o próprio (vai no selected)
+      var key=norm(x.nome)+'|'+(x.usuario||'').trim();
+      return !usadoIds[x.id]&&!usadoKeys[key];
+    });
+
+    if(!c&&!todos.length){
+      return toast('Não há clientes cadastrados em Cobranças.');}
+
+    var h='<option value="">-- Escolher cliente --</option>';
+    if(match)h+='<option value="'+esc(match.id)+'" selected>'+opLabel(match)+'</option>';
+    else if(c)h+='<option value="__cur" selected>'+opLabel(c)+'</option>';
+    h+=disponiveis.map(function(x){
+      return '<option value="'+esc(x.id)+'">'+opLabel(x)+'</option>';
+    }).join('');
     $('sdcli').innerHTML=h;
     $('sdtitle').textContent=c?'Editar cliente':'Adicionar cliente';
-    $('sdini').value='';$('sdinirow').hidden=!!c;$('sddel').hidden=!c;
-    $('sdlg').showModal()}
+    $('sdini').value='';
+    $('sdinirow').hidden=!!c;
+    $('sddel').hidden=!c;
+    $('sdlg').showModal();}
+
   $('sadd').onclick=function(){abreCli(null)};
   $('sdno').onclick=function(){$('sdlg').close()};
+
   $('sdsave').onclick=function(){
-    var v=$('sdcli').value;if(!v)return toast('Escolha o cliente.');
+    var v=$('sdcli').value;
+    if(!v)return toast('Escolha um cliente da lista.');
     var nome,usu,cid;
     if(v==='__cur'){nome=sEdit.nome;usu=sEdit.usuario||'';cid=sEdit.cid||''}
-    else{var x=db.clients.find(function(z){return z.id===v});if(!x)return toast('Cliente não encontrado.');nome=x.nome;usu=(x.usuario||'').trim();cid=x.id}
-    var dup=S().find(function(c){return c!==sEdit&&((cid&&c.cid===cid)||(norm(c.nome)===norm(nome)&&(c.usuario||'').trim()===usu))});
-    if(dup)return toast('Esse cliente já está na lista de saldos.');
-    if(sEdit){sEdit.nome=nome;sEdit.usuario=usu;sEdit.cid=cid;logar('saldo','Cliente de saldo editado: '+nome)}
-    else{var ini=P($('sdini').value),c={id:uid('s'),cid:cid,nome:nome,usuario:usu,mov:[]};
-      if(ini!=null&&ini>0)c.mov.push({id:uid('m'),t:Date.now(),tipo:'cred',v:r2(ini),obs:'Saldo inicial'});
-      S().push(c);logar('saldo','Cliente adicionado aos saldos: '+nome)}
+    else{
+      var x=(db.clients||[]).find(function(z){return z.id===v});
+      if(!x)return toast('Cliente n\u00e3o encontrado.');
+      nome=x.nome;usu=(x.usuario||'').trim();cid=x.id}
+    var dup=S().find(function(c){
+      return c!==sEdit&&((cid&&c.cid===cid)||(norm(c.nome)===norm(nome)&&(c.usuario||'').trim()===usu))});
+    if(dup)return toast('Esse cliente j\u00e1 est\u00e1 na lista de saldos.');
+    if(sEdit){
+      sEdit.nome=nome;sEdit.usuario=usu;sEdit.cid=cid;
+      logar('saldo','Editado: '+nome)}
+    else{
+      var ini=P($('sdini').value);
+      var nc={id:uid('s'),cid:cid,nome:nome,usuario:usu,mov:[]};
+      if(ini!=null&&ini>0)nc.mov.push({id:uid('m'),t:Date.now(),tipo:'cred',v:r2(ini),obs:'Saldo inicial'});
+      S().push(nc);logar('saldo','Adicionado aos saldos: '+nome)}
     persist();$('sdlg').close();renderS();nota()};
+
   $('sddel').onclick=async function(){
     if(!sEdit)return;
     var b=bal(sEdit);
-    if(!await confirmar('Excluir '+sEdit.nome+' dos saldos?\n'+(b>0?'Ele tem '+BRL(b)+' de saldo, que será perdido, junto com o histórico.':'O histórico dele também será apagado.'),{ok:'Excluir'}))return;
-    logar('saldo','Cliente removido dos saldos: '+sEdit.nome+' (saldo '+BRL(b)+')');
+    if(!await confirmar('Excluir '+sEdit.nome+' dos saldos?',{ok:'Excluir'}))return;
+    logar('saldo','Removido: '+sEdit.nome);
     db.saldos=S().filter(function(c){return c!==sEdit});sEdit=null;
     persist();$('sdlg').close();renderS();nota()};
 
-  /* ---------- adicionar / retirar saldo ---------- */
+  /* ---- adicionar/retirar saldo ---- */
   var sCur=null;
-  function abreSaldo(c){sCur=c;$('sawho').textContent=c.nome;$('sacur').textContent='Saldo atual: '+BRL(bal(c));
-    $('satipo').value='cred';$('saval').value='';$('saobs').value='';$('sadlg').showModal();setTimeout(function(){$('saval').focus()},60)}
+  function abreSaldo(c){
+    sCur=c;$('sawho').textContent=c.nome;
+    $('sacur').textContent='Saldo atual: '+BRL(bal(c));
+    $('satipo').value='cred';$('saval').value='';$('saobs').value='';
+    $('sadlg').showModal();setTimeout(function(){$('saval').focus()},60)}
   $('sano').onclick=function(){$('sadlg').close()};
   $('sasave').onclick=function(){
     if(!sCur)return;
     var v=P($('saval').value);
     if(v==null||v<=0)return toast('Digite um valor maior que zero.');
     v=r2(v);var ret=$('satipo').value==='ret';
-    if(ret&&v>bal(sCur))return toast('A retirada é maior que o saldo atual ('+BRL(bal(sCur))+').');
+    if(ret&&v>bal(sCur))return toast('A retirada \u00e9 maior que o saldo ('+BRL(bal(sCur))+').');
     sCur.mov=sCur.mov||[];
     sCur.mov.push({id:uid('m'),t:Date.now(),tipo:ret?'ret':'cred',v:ret?-v:v,obs:$('saobs').value.trim()});
-    logar('saldo',(ret?'Saldo retirado: ':'Saldo adicionado: ')+BRL(v)+' · '+sCur.nome+($('saobs').value.trim()?' · '+$('saobs').value.trim():''));
+    logar('saldo',(ret?'Retirado: ':'Adicionado: ')+BRL(v)+' \u00b7 '+sCur.nome);
     persist();$('sadlg').close();renderS();nota()};
 
-  /* ---------- histórico ---------- */
+  /* ---- historico ---- */
   var hCur=null;
   function renderHistS(){
     var c=hCur;if(!c)return;
     var ex={};db.receipts.forEach(function(h){ex[h.num]=1});
     var l=(c.mov||[]).filter(function(m){return m.tipo!=='uso'||ex[m.num]}).slice().sort(function(a,b){return b.t-a.t});
     $('shlist').innerHTML=(l.length?l.map(function(m){
-      var rot=m.tipo==='uso'?'Desconto no comprovante nº '+pad(m.num):(m.tipo==='ret'?'Retirada':(m.obs==='Saldo inicial'?'Saldo inicial':'Crédito'));
-      var obs=m.tipo==='uso'?'':(m.obs&&m.obs!=='Saldo inicial'?' · '+esc(m.obs):'');
-      return '<div class="h"><span>'+esc(rot)+obs+'<br><small>'+new Date(m.t).toLocaleDateString('pt-BR')+'</small></span><span><b'+(m.v<0?' class="neg"':'')+'>'+(m.v<0?'− ':'+ ')+BRL(Math.abs(m.v))+'</b>'+(m.tipo==='uso'?'':' <button class="s" data-hx="'+m.id+'">Apagar</button>')+'</span></div>'}).join('')
-      :'<p class="note">Sem movimentos ainda.</p>')+'<div class="h"><span><b>Saldo atual</b></span><span><b>'+BRL(bal(c))+'</b></span></div>'}
+      var rot=m.tipo==='uso'?'Desconto comprovante n\u00ba '+pad(m.num):(m.tipo==='ret'?'Retirada':(m.obs==='Saldo inicial'?'Saldo inicial':'Cr\u00e9dito'));
+      var obs=m.tipo==='uso'?'':(m.obs&&m.obs!=='Saldo inicial'?' &middot; '+esc(m.obs):'');
+      return '<div class="h"><span>'+esc(rot)+obs+'<br><small>'+new Date(m.t).toLocaleDateString('pt-BR')+'</small></span>'+
+        '<span><b'+(m.v<0?' class="neg"':'')+'>'+(m.v<0?'&minus; ':'+ ')+BRL(Math.abs(m.v))+'</b>'+
+        (m.tipo==='uso'?'':' <button class="s" data-hx="'+m.id+'">Apagar</button>')+'</span></div>'}).join('')
+      :'<p class="note">Sem movimentos.</p>')+
+      '<div class="h"><span><b>Saldo atual</b></span><span><b>'+BRL(bal(c))+'</b></span></div>'}
+
   $('shlist').onclick=async function(e){
     var b=e.target.closest('[data-hx]');if(!b||!hCur)return;
     var m=(hCur.mov||[]).find(function(x){return x.id===b.dataset.hx});if(!m)return;
-    if(m.v>0&&bal(hCur)-m.v<0)return toast('Não dá para apagar: o saldo ficaria negativo (parte já foi usada).');
     if(!await confirmar('Apagar este movimento de '+BRL(Math.abs(m.v))+'?',{ok:'Apagar'}))return;
     hCur.mov=hCur.mov.filter(function(x){return x!==m});
-    logar('saldo','Movimento de saldo apagado: '+BRL(m.v)+' · '+hCur.nome);
-    persist();renderHistS();renderS();nota()};
+    logar('saldo','Movimento apagado');persist();renderHistS();renderS();nota()};
+
   $('shno').onclick=function(){$('shdlg').close()};
 
   $('slist').onclick=function(e){
@@ -1427,7 +1472,7 @@ go('home');
     else if(b.dataset.sa==='ed')abreCli(c);
     else{hCur=c;$('shwho').textContent=c.nome;renderHistS();$('shdlg').showModal()}};
 
-  /* ---------- aviso na tela de comprovantes ---------- */
+  /* ---- aviso no comprovante ---- */
   var lastHtml=null;
   function nota(){
     var box=$('sdnote');if(!box)return;
@@ -1437,27 +1482,30 @@ go('home');
         var c=achar($('user').value,$('name').value);
         if(c){
           var num=data().num,av=bal(c,num),ds=P($('disc').value)||0;
-          var aplicado=(c.mov||[]).some(function(m){return m.tipo==='uso'&&m.num==num&&db.receipts.some(function(h){return h.num==num})});
-          if(av>0||aplicado){
-            var msg='<b>'+esc(c.nome)+'</b> tem <b>'+BRL(av)+'</b> de saldo de indicação.';
-            if(ds>av)msg+=' <span style="color:#c40000">O desconto é maior que o saldo; só '+BRL(av)+' serão descontados do saldo.</span>';
-            else if(ds>0)msg+=' Este desconto usa '+BRL(ds)+' e deixa '+BRL(r2(av-ds))+'.';
-            else msg+=' Preencha o desconto acima para usar.';
-            if(av>0&&Math.abs(ds-Math.min(av,P($('val').value)||av))>0.001)msg+=' <button class="chip" type="button" id="sduse">Usar tudo</button>';
-            html=msg}}}
-    }catch(e){html=''}
-    if(html===lastHtml)return;
-    lastHtml=html;box.hidden=!html;box.innerHTML=html}
+          if(av>0){
+            var msg='<b>'+esc(c.nome)+'</b> tem <b>'+BRL(av)+'</b> de saldo de indica\u00e7\u00e3o.';
+            if(ds>av){msg+=' <span style="color:#c40000">Desconto maior que o saldo; s\u00f3 '+BRL(av)+' ser\u00e3o descontados.</span>';}
+            else if(ds>0){msg+=' Usando '+BRL(ds)+', sobra '+BRL(r2(av-ds))+'.';}
+            else{msg+=' Preencha o desconto acima para usar.';}
+            if(av>0){msg+=' <button class="chip" type="button" id="sduse">Usar tudo</button>';}
+            html=msg;
+          }
+        }
+      }
+    } catch(e){html='';}
+    if(html===lastHtml)return;lastHtml=html;box.hidden=!html;box.innerHTML=html}
+
   $('sdnote').addEventListener('click',function(e){
     if(!e.target.closest('#sduse'))return;
     var c=achar($('user').value,$('name').value);if(!c)return;
     var av=bal(c,data().num),pl=P($('val').value),x=pl!=null&&pl>0?Math.min(av,pl):av;
     $('disc').value=FMT(x);$('disc').dispatchEvent(new Event('input',{bubbles:true}));nota()});
+
   ['user','name','disc','val'].forEach(function(i){$(i).addEventListener('input',nota)});
   $('ctipo').addEventListener('change',nota);
   setInterval(function(){if(!$('v-rec').hidden)nota()},700);
 
-  /* ---------- desconta do saldo ao gerar o comprovante (uma vez por nº; reemitir só ajusta) ---------- */
+  /* ---- desconto ao gerar comprovante ---- */
   function aplica(){
     var num=emitted&&emitted.num;if(num==null)return;
     var rec=db.receipts.find(function(h){return h.num==num});if(!rec)return;
@@ -1468,19 +1516,18 @@ go('home');
       if(x.mov.length!==n0)mudou=true});
     if(c){
       c.mov=c.mov||[];
-      var av=bal(c,num),usa=r2(Math.min(ds,Math.max(av,0))),ex=c.mov.find(function(m){return m.tipo==='uso'&&m.num==num});
+      var av=bal(c,num),usa=r2(Math.min(ds,Math.max(av,0)));
+      var ex=c.mov.find(function(m){return m.tipo==='uso'&&m.num==num});
       if(usa>0){
         if(ex){if(ex.v!==-usa){ex.v=-usa;mudou=true}}
-        else{c.mov.push({id:uid('m'),t:Date.now(),tipo:'uso',v:-usa,num:num,obs:'Comprovante nº '+pad(num)});mudou=true;
-          logar('saldo','Desconto de '+BRL(usa)+' do saldo de '+c.nome+' (comprovante nº '+pad(num)+')')}
-        if(ds>usa)toast('O desconto é maior que o saldo de '+c.nome+'. Descontei só '+BRL(usa)+' do saldo.')}
+        else{c.mov.push({id:uid('m'),t:Date.now(),tipo:'uso',v:-usa,num:num,obs:'Comprovante n\u00ba '+pad(num)});mudou=true;
+          logar('saldo','Desconto '+BRL(usa)+' de '+c.nome+' (n\u00ba '+pad(num)+')')}
+        if(ds>usa)toast('Desconto maior que o saldo de '+c.nome+'. Descontei s\u00f3 '+BRL(usa)+'.')}
       else if(ex){c.mov=c.mov.filter(function(m){return m!==ex});mudou=true}}
-    if(mudou){persist();renderS()}
-    lastHtml=null;nota()}
+    if(mudou){persist();renderS()}lastHtml=null;nota()}
+
   var _save=save;
   save=function(){var ok=_save.apply(this,arguments);if(ok){try{aplica()}catch(e){console.error(e)}}return ok};
-
-  /* ---------- ganchos de navegação e limpeza ---------- */
   var _go=go;
   go=function(v){var r=_go.apply(this,arguments);if(v==='saldo')renderS();if(v==='rec'){lastHtml=null;nota()}return r};
   var _cf=clearForm;
