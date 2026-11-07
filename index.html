@@ -91,7 +91,7 @@ pre.pv{white-space:pre-wrap;background:#faf6f6;border:1px dashed var(--line);bor
 .sxb:hover{background:#fbf8f8;filter:none}.sx.open .sxb{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,26,26,.12)}
 .sxb svg{width:16px;height:16px;flex:none;stroke:var(--mut);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}.sx.open .sxb svg{transform:rotate(180deg)}
 .sxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sxt.ph{color:var(--mut)}
-.sxl{position:fixed;z-index:80;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:0 22px 50px -14px rgba(60,20,20,.38);padding:6px;overflow:auto}
+.sxl{position:fixed;inset:auto;margin:0;width:auto;height:auto;color:var(--ink);z-index:2147483000;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:0 22px 50px -14px rgba(60,20,20,.38);padding:6px;overflow:auto}
 .sxo{padding:9px 12px;border-radius:9px;cursor:pointer;display:flex;justify-content:space-between;gap:12px}
 .sxo.k,.sxo:hover{background:#f6eeee}.sxo.on{color:var(--dk);font-weight:600}.sxo i{font-style:normal}
 .ropts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
@@ -1126,20 +1126,20 @@ $('addsrv').onclick=()=>{const n=$('nsrv').value.trim();if(!n)return toast('Digi
 /* ===== SELETORES MODERNOS ===== */
 (function(){
 const proto=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value');
-const closeAll=()=>document.querySelectorAll('.sx.open').forEach(w=>{w.classList.remove('open');w.querySelector('.sxl').hidden=true});
+const closeAll=()=>document.querySelectorAll('.sx.open').forEach(w=>{w.classList.remove('open');const q=w.querySelector('.sxl');try{q.matches(':popover-open')&&q.hidePopover()}catch(_){ }q.hidden=true});
 document.addEventListener('click',e=>{if(!e.target.closest('.sx'))closeAll()});
 addEventListener('resize',closeAll);addEventListener('scroll',e=>{if(e.target.closest&&e.target.closest('.sxl'))return;closeAll()},true);
 function enh(sel){
   const w=document.createElement('div');w.className='sx '+sel.className;w.style.cssText=sel.style.cssText;
   sel.parentNode.insertBefore(w,sel);w.appendChild(sel);sel.style.display='none';
   const b=document.createElement('button');b.type='button';b.className='sxb';b.innerHTML='<span class="sxt"></span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
-  const l=document.createElement('div');l.className='sxl';l.hidden=true;w.append(b,l);let k=0;
+  const l=document.createElement('div');l.className='sxl';l.hidden=true;l.setAttribute('popover','manual');w.append(b,l);let k=0;
   const sync=()=>{const o=sel.options[sel.selectedIndex],t=b.firstChild;t.textContent=o&&o.text?o.text:'Selecionar';t.classList.toggle('ph',!(o&&o.text))};
   Object.defineProperty(sel,'value',{get(){return proto.get.call(sel)},set(v){proto.set.call(sel,v);sync()},configurable:true});
   new MutationObserver(sync).observe(sel,{childList:true,subtree:true,characterData:true});
   const mark=()=>{[...l.children].forEach((x,i)=>x.classList.toggle('k',i===k));const x=l.children[k];x&&x.scrollIntoView({block:'nearest'})};
   const open=()=>{closeAll();l.innerHTML=[...sel.options].map((o,i)=>`<div class="sxo${i===sel.selectedIndex?' on':''}" data-i="${i}"><span>${esc(o.text||'—')}</span>${i===sel.selectedIndex?'<i>✓</i>':''}</div>`).join('');
-    const r=b.getBoundingClientRect();l.hidden=false;l.style.minWidth=r.width+'px';
+    const r=b.getBoundingClientRect();l.hidden=false;try{l.showPopover&&l.showPopover()}catch(_){ }l.style.minWidth=r.width+'px';
     const below=innerHeight-r.bottom-16,hh=Math.min(l.scrollHeight,280),up=below<hh&&r.top>below;
     l.style.left=Math.min(r.left,innerWidth-l.offsetWidth-8)+'px';l.style.maxHeight=Math.min(280,up?r.top-16:below)+'px';
     l.style.top=(up?r.top-Math.min(hh,r.top-16)-6:r.bottom+6)+'px';w.classList.add('open');k=Math.max(0,sel.selectedIndex);mark()};
