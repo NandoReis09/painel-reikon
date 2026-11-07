@@ -486,7 +486,7 @@ dialog{background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.
 
 </main>
 </div>
-<dialog id="dlg"><h2>Cobrança · <span id="mwho"></span></h2><select id="msel" style="margin-bottom:10px"></select><textarea id="mt" style="height:240px"></textarea><div class="bar"><button class="p" id="mcopy">Copiar</button><button id="mwa">Abrir no WhatsApp</button><button class="s" id="mclose">Fechar</button><span id="mok" style="color:#1c7a3d;font-size:13px"></span></div></dialog>
+<dialog id="dlg"><h2>Cobrança · <span id="mwho"></span></h2><select id="msel" style="margin-bottom:10px"></select><div class="r" style="margin-bottom:10px"><div><label>Desconto (R$) — opcional</label><input id="mdesc" inputmode="decimal" placeholder="0,00" autocomplete="off"></div><div><label>Total a cobrar</label><input id="mtot" readonly tabindex="-1" placeholder="—"></div></div><textarea id="mt" style="height:240px"></textarea><div class="bar"><button class="p" id="mcopy">Copiar</button><button id="mwa">Abrir no WhatsApp</button><button class="s" id="mclose">Fechar</button><span id="mok" style="color:#1c7a3d;font-size:13px"></span></div></dialog>
 <dialog id="crdlg"><h2>Registrar crédito</h2>
 <div class="r"><div><label>Tipo</label><select id="crtipo"><option value="compra">Compra de créditos</option><option value="ajuste">Ajuste de estoque</option></select></div><div><label>Servidor</label><select id="crsrv"></select></div></div>
 <div class="r"><div><label>Data</label><input id="crdata" inputmode="numeric" placeholder="dd/mm/aaaa"></div><div><label>Quantidade</label><input id="crqtd" inputmode="numeric" placeholder="10"></div></div>
@@ -717,21 +717,24 @@ $('cord').onchange=()=>{db.ord=$('cord').value;persist();renderCob()};
 $('cq').oninput=e=>{cq=e.target.value;renderCob()};
 $('ctab').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const c=db.clients.find(x=>x.id===b.dataset.i);({cb:cobrar,rn:renovar,cp:compr,ed:editar,nm:nomeCopy})[b.dataset.a](c)};
 const PT=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'],EN=['january','february','march','april','may','june','july','august','september','october','november','december'],MESES=PT.map(n=>n==='marco'?'março':n);
-const MARC=['nome','primeiro_nome','usuario','valor','plano','vencimento','servidor','tela','situacao','dias'];
+const MARC=['nome','primeiro_nome','usuario','valor','plano','vencimento','servidor','tela','situacao','dias','desconto','valor_original'];
 function fData(iso){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(iso||'');if(!m)return'';const f=db.fmt.data;return f==='curta'?`${m[3]}/${m[2]}`:f==='extenso'?`${+m[3]} de ${MESES[m[2]-1]} de ${m[1]}`:`${m[3]}/${m[2]}/${m[1]}`}
 function fVal(v){if(v==null||v==='')return'';const n=typeof v==='number'?v:num(v),f=db.fmt.valor;return f==='rs'?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):f==='num'?n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):String(n).replace('.',',')}
 const fNome=s=>{s=s||'';const f=db.fmt.nome;return f==='upper'?s.toUpperCase():f==='title'?s.toLowerCase().replace(/(^|\s)\S/g,x=>x.toUpperCase()):s};
 function fSit(c){const n=dayDiff(c.venc);if(n===null)return'';return n<0?`venceu há ${-n} dia${-n>1?'s':''}`:n===0?'vence hoje':n===1?'vence amanhã':`vence em ${n} dias`}
-function fillTpl(c,tx){const n=dayDiff(c.venc),m={nome:fNome(c.nome),primeiro_nome:fNome((c.nome||'').split(' ')[0]),usuario:c.usuario,valor:fVal(c.valor),plano:c.plano,vencimento:fData(c.venc),servidor:c.servidor,tela:c.tela,situacao:fSit(c),dias:n===null?'':String(Math.abs(n))};
-  return tx.split('\n').map(l=>{let had=false,empty=true;const o=l.replace(/\{(\w+)\}/g,(x,k)=>{if(!(k in m))return x;had=true;if(m[k])empty=false;return m[k]||''});return had&&empty?null:o}).filter(l=>l!==null).join('\n')}
+function fillTpl(c,tx,d){const vo=c.valor==null||c.valor===''?0:(typeof c.valor==='number'?c.valor:num(c.valor));d=d>0?Math.min(d,vo):0;const vf=Math.round((vo-d)*100)/100,auto=d>0&&!/\{(desconto|valor_original)\}/.test(tx),n=dayDiff(c.venc),m={nome:fNome(c.nome),primeiro_nome:fNome((c.nome||'').split(' ')[0]),usuario:c.usuario,valor:fVal(c.valor==null||c.valor===''?c.valor:vf),valor_original:d>0?fVal(vo):'',desconto:d>0?fVal(d):'',plano:c.plano,vencimento:fData(c.venc),servidor:c.servidor,tela:c.tela,situacao:fSit(c),dias:n===null?'':String(Math.abs(n))};
+  return tx.split('\n').map(l=>{let had=false,empty=true;let o=l.replace(/\{(\w+)\}/g,(x,k)=>{if(!(k in m))return x;had=true;if(m[k])empty=false;return m[k]||''});if(auto&&!empty&&/\{valor\}/.test(l))o+=' (de '+fVal(vo)+' com desconto de '+fVal(d)+')';return had&&empty?null:o}).filter(l=>l!==null).join('\n')}
 function nomeIPTV(c){const v=c.valor==null||c.valor===''?'':String(typeof c.valor==='number'?c.valor:num(c.valor)).replace('.',','),ab=db.abrev[c.servidor]||(c.servidor||'').slice(0,3).toUpperCase(),
   m={nome:c.nome||'',abrev:ab,valor:v,usuario:c.usuario||'',servidor:c.servidor||'',tela:c.tela||''};
   return db.nomeFmt.split('│').map(s=>{let had=false,empty=true;const o=s.replace(/\{(\w+)\}/g,(x,k)=>{if(!(k in m))return x;had=true;if(m[k])empty=false;return m[k]});return had&&empty?null:o.trim()}).filter(s=>s).join(' │ ')}
 function nomeCopy(c){const t=nomeIPTV(c);navigator.clipboard.writeText(t).then(()=>toast('Copiado: '+t),()=>perguntar('Copie o nome:',t))}
 function updNm(){$('cnm').value=nomeIPTV({nome:$('cnome').value.trim(),usuario:$('cusu').value.trim(),servidor:$('csrv').value,valor:$('cval').value.trim()?num($('cval').value):null,tela:$('ctela').value})}
 function pickTpl(c){const n=dayDiff(c.venc),k=n===null?'':n<0?'vencido':n<=3?'breve':'dia';return db.templates.find(t=>t.quando===k)||db.templates.find(t=>!t.quando)||db.templates[0]}
-function cobrar(c){curC=c;const t=pickTpl(c);$('msel').innerHTML=db.templates.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join('');$('msel').value=t.id;$('mt').value=fillTpl(c,t.texto);$('mwho').textContent=c.nome;$('mok').textContent='';$('dlg').showModal()}
-$('msel').onchange=()=>{$('mt').value=fillTpl(curC,db.templates.find(x=>x.id===$('msel').value).texto)};
+function cobrar(c){curC=c;const t=pickTpl(c);$('msel').innerHTML=db.templates.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join('');$('msel').value=t.id;$('mdesc').value='';$('mt').value=fillTpl(c,t.texto);updTot();$('mwho').textContent=c.nome;$('mok').textContent='';$('dlg').showModal()}
+const mDesc=()=>{const v=$('mdesc').value.trim();return v?num(v):0};
+function updTot(){const c=curC,vo=c.valor==null||c.valor===''?null:(typeof c.valor==='number'?c.valor:num(c.valor));if(vo===null){$('mtot').value='';return}const d=Math.min(Math.max(mDesc(),0),vo);$('mtot').value=fVal(Math.round((vo-d)*100)/100)}
+function refMsg(){$('mt').value=fillTpl(curC,db.templates.find(x=>x.id===$('msel').value).texto,mDesc());updTot()}
+$('msel').onchange=refMsg;$('mdesc').oninput=refMsg;
 $('mclose').onclick=()=>$('dlg').close();
 $('mcopy').onclick=()=>navigator.clipboard.writeText($('mt').value).then(()=>{$('mok').textContent='Copiado.'},()=>$('mt').select());
 $('mwa').onclick=()=>{let p=(curC.phone||'').replace(/\D/g,'');if(!p)return toast('Este cliente não tem telefone cadastrado.');if(p.length<=11)p='55'+p;window.open('https://wa.me/'+p+'?text='+encodeURIComponent($('mt').value),'_blank')};
